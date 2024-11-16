@@ -1,0 +1,8 @@
+-- This file is used to ensure that the CubedOS core uses Jorvik and SPARKable.
+--
+-- This file isn't currently used. The profile and the partition elaboration policy are set in
+-- the specification of package CubedOS.
+--
+--pragma Profile(Jorvik);
+--pragma Partition_Elaboration_Policy(Sequential);
+--pragma SPARK_Mode(On);
