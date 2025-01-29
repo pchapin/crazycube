@@ -9,9 +9,17 @@ with System;
 -- Bring in the necessary modules, both from CubedOS and from this application.
 with CubedOS.Log_Server.Messages;
 with CubedOS.Time_Server.Messages;
+with Controller.Messages;
+with Motors.Messages;
+with Sensors.Messages;
+with State_Estimator.Messages;
 
 pragma Unreferenced(CubedOS.Log_Server.Messages);
 pragma Unreferenced(CubedOS.Time_Server.Messages);
+pragma Unreferenced(Controller.Messages);
+pragma Unreferenced(Motors.Messages);
+pragma Unreferenced(Sensors.Messages);
+pragma Unreferenced(State_Estimator.Messages);
 
 procedure Main is
    pragma Priority(System.Priority'First);

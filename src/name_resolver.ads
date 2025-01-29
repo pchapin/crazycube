@@ -13,5 +13,8 @@ package Name_Resolver is
    Time_Server : constant Message_Address := (0, 2);
 
    -- Application-Specific Modules
-
+   Sensors         : constant Message_Address := (0, 3);
+   State_Estimator : constant Message_Address := (0, 4);
+   Controller      : constant Message_Address := (0, 5);
+   Motors          : constant Message_Address := (0, 6);
 end Name_Resolver;
