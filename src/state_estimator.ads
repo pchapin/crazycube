@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- FILE   : state_estimater.ads
+-- FILE   : state_estimator.ads
 -- SUBJECT: Top level package of a CubedOS state_estimater.
 -- AUTHOR : (C) Copyright 2024 by Vermont State University
 --
@@ -8,7 +8,7 @@
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
 
-package state_estimater is
+package state_estimator is
    pragma Pure;
 
-end state_estimater;
+end state_estimator;
