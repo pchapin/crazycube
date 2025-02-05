@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- FILE   : state_estimater-messages.ads
+-- FILE   : state_estimator-messages.ads
 -- SUBJECT: Specification of a package that implements the main part of the module.
 -- AUTHOR : (C) Copyright 2024 by Vermont State University
 --
@@ -8,10 +8,10 @@ pragma SPARK_Mode(On);
 
 with System;
 
-package State_Estimater.Messages is
+package State_Estimator.Messages is
 
    task Message_Loop is
       pragma Priority(System.Default_Priority);
    end Message_Loop;
 
-end State_Estimater.Messages;
+end State_Estimator.Messages;
