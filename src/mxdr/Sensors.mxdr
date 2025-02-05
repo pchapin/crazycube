@@ -1,0 +1,19 @@
+// FILE: Sensors.mxdr
+message struct -> Get_Gyro_Measurements_Request {
+    void;
+};
+message struct <- Get_Gyro_Measurements_Reply {
+    Boolean Success;
+    Float GyroscopeX;
+    Float GyroscopeY;
+    Float GyroscopeZ;
+};
+message struct -> Get_Accel_Measurements_Request {
+    void;
+};
+message struct <- Get_Accel_Measurements_Reply {
+    Boolean Success;
+    Float AccelerometerX;
+    Float AccelerometerY;
+    Float AccelerometerZ;
+};

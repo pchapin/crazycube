@@ -1,0 +1,8 @@
+// FILE: Motors.mxdr
+message struct -> Move_Request {
+    void; //??
+};
+//confirmation reply
+message struct <- Move_Reply {
+    Boolean Success;
+};
