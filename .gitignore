@@ -1,2 +1,5 @@
 
 build
+# Generated API packages
+src/mxdr/*.ads
+src/mxdr/*.adb

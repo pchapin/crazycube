@@ -1,11 +1,11 @@
-// FILE: State_Estimater.mxdr
+// FILE: State_Estimator.mxdr
 message struct -> Get_State_Request {
     Float GyroscopeX;
     Float GyroscopeY;
     Float GyroscopeZ;
     Float AccelerometerX;
     Float AccelerometerY;
-    Float AccelerometerZ;;
+    Float AccelerometerZ;
 };
 message struct <- Get_State_Reply {
     Float AttitudeRoll;
