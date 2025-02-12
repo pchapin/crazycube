@@ -14,23 +14,32 @@ with CubedOS.Log_Server.API;
 package body State_Estimator.Messages is
    use Message_Manager;
 
-   procedure Initialize is
-   begin
-      null;
-   end Initialize;
-
    -------------------
    -- Message Handling
    -------------------
 
-   procedure Handle_A_Request(Message : in Message_Record)
+   procedure Handle_Get_State_Request(Message : in Message_Record)
      with Pre => State_Estimator.API.Is_A_Request(Message)
    is
       Status : Message_Status_Type;
+      GyroX : Float;
+      GryoY : Float;
+      GyroZ : Float;
+      AccelX : Float;
+      AccelY : Float;
+      AccelZ : Float;
    begin
-      State_Estimator.API.A_Request_Decode(Message, Status);
+      State_Estimator.API.Get_State_Request_Decode
+        (Message        => Message_Record,
+         GyroscopeX     => GyroX,
+         GyroscopeY     => GryoY,
+         GyroscopeZ     => GyroZ,
+         AccelerometerX => AccelX,
+         AccelerometerY => AccelY,
+         AccelerometerZ => AccelZ,
+         Decode_Status  => Status);
 
-   end Handle_A_Request;
+   end Handle_Get_State_Request;
 
    -----------------------------------
    -- Message Decoding and Dispatching
@@ -38,8 +47,8 @@ package body State_Estimator.Messages is
 
    procedure Process(Message : in Message_Record) is
    begin
-      if State_Estimator.API.Is_A_Request(Message) then
-         Handle_A_Request(Message);
+      if State_Estimator.API.Is_Get_State_Request(Message) then
+         Handle_Get_State_Request(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.State_Estimator,
                                             CubedOS.Log_Server.API.Error,
@@ -55,7 +64,6 @@ package body State_Estimator.Messages is
    task body Message_Loop is
       Incoming_Message : Message_Manager.Message_Record;
    begin
-      Initialize;
       loop
          Message_Manager.Fetch_Message(Name_Resolver.State_Estimator.Module_ID, Incoming_Message);
          Process(Incoming_Message);

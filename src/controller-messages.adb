@@ -8,7 +8,6 @@ pragma SPARK_Mode(On);
 
 with Message_Manager;    -- See the comments in SAMPLE_MODULE-api.ads.
 with Name_Resolver;      -- See the comments in SAMPLE_MODULE-api.ads.
-with Controller.API;  -- Needed so that the types in the API can be used here.
 with CubedOS.Log_Server.API;
 
 package body Controller.Messages is
@@ -36,11 +35,12 @@ package body Controller.Messages is
    -- it should be called Sample_Module.Core (for example).
 
    procedure Handle_A_Request(Message : in Message_Record)
-     with Pre => Sample_Module.API.Is_A_Request(Message)
+    -- with Pre => Sample_Module.API.Is_A_Request(Message)
    is
       Status : Message_Status_Type;
    begin
-      Sample_Module.API.A_Request_Decode(Message, Status);
+      -- Sample_Module.API.A_Request_Decode(Message, Status);
+      null;
       -- Act on the request message.
    end Handle_A_Request;
 

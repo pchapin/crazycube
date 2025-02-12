@@ -8,10 +8,10 @@ pragma SPARK_Mode(On);
 
 with System;
 
-package Contoller.Messages is
+package Controller.Messages is
 
    task Message_Loop is
       pragma Priority(System.Default_Priority);
    end Message_Loop;
 
-end Contoller.Messages;
+end Controller.Messages;

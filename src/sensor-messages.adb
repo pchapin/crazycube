@@ -8,28 +8,47 @@ pragma SPARK_Mode(On);
 
 with Message_Manager;    -- See the comments in sensor-api.ads.
 with Name_Resolver;      -- See the comments in sensor-api.ads.
-with Sensor.API;  -- Needed so that the types in the API can be used here.
+with Sensor.API;         -- Needed so that the types in the API can be used here.
 with CubedOS.Log_Server.API;
 
 package body Sensor.Messages is
    use Message_Manager;
 
-   procedure Initialize is
-   begin
-      null;
-   end Initialize;
-
    -------------------
    -- Message Handling
    -------------------
 
-   procedure Handle_A_Request(Message : in Message_Record)
-     with Pre => Sensor.API.Is_A_Request(Message)
+   procedure Handle_Get_Gyro_Measurements_Request(Message : in Message_Record)
+     with Pre => Sensor.API.Is_Get_Gyro_Measurements_Request(Message)
    is
-      Status : Message_Status_Type;
+      Measurments_Reply : Message_Record;
    begin
-      Sensor.API.A_Request_Decode(Message, Status);
-   end Handle_A_Request;
+      Measurments_Reply := Sensors.API.Get_Gyro_Measurements_Reply_Encode
+        (
+         Measurments_Reply,
+         1,
+         True,
+         0,
+         0,
+         0);
+      Route_Message(Measurments_Reply);
+   end Handle_Get_Gyro_Measurements_Request;
+
+   procedure Handle_Get_Accel_Measurements_Request(Message : in Message_Record)
+     with Pre => Sensor.API.Is_Get_Accel_Measurements_Request(Message)
+   is
+      Measurments_Reply : Message_Record;
+   begin
+      Measurments_Reply := Sensors.API.Get_Accel_Measurements_Reply_Encode
+        (
+         Measurments_Reply,
+         1,
+         True,
+         0,
+         0,
+         0);
+      Route_Message(Measurments_Reply);
+   end Handle_Get_Accel_Measurements_Request;
 
    -----------------------------------
    -- Message Decoding and Dispatching
@@ -37,8 +56,10 @@ package body Sensor.Messages is
 
    procedure Process(Message : in Message_Record) is
    begin
-      if Sensor.API.Is_A_Request(Message) then
-         Handle_A_Request(Message);
+      if Sensor.API.Is_Get_Gyro_Measurements_Request(Message) then
+         Handle_Get_Gyro_Measurements_Request(Message);
+      elsif Sensor.API.Is_Get_Accel_Measurements_Request(Message) then
+         Handle_Get_Accel_Measurements_Request(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.sensor,
                                             CubedOS.Log_Server.API.Error,
