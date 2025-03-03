@@ -1,6 +1,6 @@
 // FILE: Motors.mxdr
 message struct -> Move_Request {
-    void; //??
+    Float Voltage;
 };
 //confirmation reply
 message struct <- Move_Reply {
