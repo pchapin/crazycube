@@ -28,6 +28,17 @@ package body State_Estimator.Messages is
       AccelX : Float;
       AccelY : Float;
       AccelZ : Float;
+
+      Pitch : Float;
+      Roll  : Float;
+      Yaw   : Float := 0.0;
+      Velocity : Float := 0.0;
+      Altitude: Float;
+
+      PI : Float := Ada.Numerics.Pi;
+      DT : Float := 0.01; -- Time step
+
+      State_Reply : Message_Record;
    begin
       State_Estimator.API.Get_State_Request_Decode
         (Message        => Message_Record,
@@ -39,6 +50,28 @@ package body State_Estimator.Messages is
          AccelerometerZ => AccelZ,
          Decode_Status  => Status);
 
+      Pitch := 180 * Ada.Numerics.Elementary_Functions.Arctan(AccelX, Ada.Numerics.Elementary_Functions.Sqrt(AccelY * AccelY + AccelZ * AccelZ))/PI;
+      Roll  := 180 * Ada.Numerics.Elementary_Functions.Arctan(AccelY, Ada.Numerics.Elementary_Functions.Sqrt(AccelX * AccelX + AccelZ * AccelZ))/PI;
+      Yaw := Yaw + GyroZ;
+      if Yaw < 0 then
+         Yaw := Yaw + 360.0;
+      elsif Yaw >= 360.0 then
+         Yaw := Yaw - 360.0;
+      end if;
+
+      Velocity := Velocity + AccelZ * DT;
+      Altitude := Altitude + Velocity * DT;
+
+      State_Reply := state_estimator.API.Get_State_Reply_Encode
+        (Receiver_Address => Message.Sender_Address,
+         Request_ID => 1,
+         AttitudeRoll => Roll,
+         AttitudePitch => Pitch,
+         AttitudeYaw => Yaw,
+         Altitude => Altitude,
+         Priority => System.Priority);
+      Route_Message (Message => State_Reply);
+
    end Handle_Get_State_Request;
 
    -----------------------------------
@@ -47,7 +80,7 @@ package body State_Estimator.Messages is
 
    procedure Process(Message : in Message_Record) is
    begin
-      if State_Estimator.API.Is_Get_State_Request(Message) then
+      if State_Estimator.API.Is_Get_State_Request then
          Handle_Get_State_Request(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.State_Estimator,
