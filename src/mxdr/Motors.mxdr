@@ -1,6 +1,15 @@
 // FILE: Motors.mxdr
-message struct -> Move_Request {
-    Float Voltage;
+message struct -> Increase_Voltage {
+    Float VoltageOne;
+    Float VoltageTwo;
+    Float VoltageThree;
+    Float VoltageFour;
+};
+message struct -> Decrease_Voltage {
+    Float VoltageOne;
+    Float VoltageTwo;
+    Float VoltageThree;
+    Float VoltageFour;
 };
 //confirmation reply
 message struct <- Move_Reply {

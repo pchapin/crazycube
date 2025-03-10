@@ -13,30 +13,75 @@ with CubedOS.Log_Server.API;
 
 package body motors.Messages is
    use Message_Manager;
-
+   MotorOne : Float := 0;
+   MotorTwo : Float := 0;
+   MotorThree : Float := 0;
+   MotorFour : Float := 0;
    -------------------
    -- Message Handling
    -------------------
 
-   procedure Handle_Move_Request(Message : in Message_Record)
+   procedure Handle_Increase_Voltage_Request(Message : in Message_Record)
      with Pre => Sample_Module.API.Is_A_Request(Message)
    is
       Status  : Message_Status_Type;
-      Voltage : Float;
+      VoltageOne : Float;
+      VoltageTwo : Float;
+      VoltageThree : Float;
+      VoltageFour: Float;
       Move_Reply : Message_Record;
    begin
-      Motors.API.Move_Request_Decode
-        (Message => Message_Record,
-         Voltage => Voltage,
-         Decode_Status => Status);
+      Motors.API.Increase_Voltage_Decode
+        (Message       => Message,
+         VoltageOne    => VoltageOne,
+         VoltageTwo    => VoltageTwo,
+         VoltageThree  => VoltageThree,
+         VoltageFour   => VoltageFour,
+         Decode_Status => Message_Status_Type);
       -- moves the drone
+      MotorOne := MotorOne + VoltageOne;
+      MotorTwo := MotorTwo + VoltageTwo;
+      MotorThree := MotorThree + VoltageThree;
+      MotorOne := MotorOne + VoltageFour;
+
       Move_Reply := Motors.API.Move_Reply_Encode
         (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
          Success          => True,
          Priority         => System.Priority);
       Route_Message (Message => Move_Reply);
-   end Handle_A_Request;
+   end Handle_Increase_Voltage_Request;
+
+   procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
+     with Pre => Sample_Module.API.Is_A_Request(Message)
+   is
+      Status  : Message_Status_Type;
+      VoltageOne : Float;
+      VoltageTwo : Float;
+      VoltageThree : Float;
+      VoltageFour: Float;
+      Move_Reply : Message_Record;
+   begin
+      Motors.API.Decrease_Voltage_Decode
+        (Message       => Message,
+         VoltageOne    => VoltageOne,
+         VoltageTwo    => VoltageTwo,
+         VoltageThree  => VoltageThree,
+         VoltageFour   => VoltageFour,
+         Decode_Status => Message_Status_Type);
+      -- moves the drone
+      MotorOne := MotorOne - VoltageOne;
+      MotorTwo := MotorTwo - VoltageTwo;
+      MotorThree := MotorThree - VoltageThree;
+      MotorOne := MotorOne - VoltageFour;
+
+      Move_Reply := Motors.API.Move_Reply_Encode
+        (Receiver_Address => Message.Sender_Address,
+         Request_ID       => 1,
+         Success          => True,
+         Priority         => System.Priority);
+      Route_Message (Message => Move_Reply);
+   end Handle_Decrease_Voltage_Request;
 
    -----------------------------------
    -- Message Decoding and Dispatching
