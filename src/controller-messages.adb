@@ -36,7 +36,55 @@ package body Controller.Messages is
             VoltageFour => Distance);
          Route_Message(Command_Message);
       elsif Command = 'B' then
-        Put_Line("Going up");
+         Put_Line("Landing");
+         Command_Message := Motors.API.Decrease_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command = 'C' then
+         Put_Line("Going up");
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command = 'D' then
+         Put_Line("Going down");
+         Command_Message := Motors.API.Decrease_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command = 'E' then
+         Put_Line("Going left");
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+           VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command = 'F' then
+         Put_Line("Going right");
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
       else
          Put_Line("Error");
       end if;
