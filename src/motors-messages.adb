@@ -13,73 +13,71 @@ with CubedOS.Log_Server.API;
 
 package body motors.Messages is
    use Message_Manager;
-   MotorOne : Float := 0;
-   MotorTwo : Float := 0;
-   MotorThree : Float := 0;
-   MotorFour : Float := 0;
+   Motor_One : Float := 0.0;
+   Motor_Two : Float := 0.0;
+   Motor_Three : Float := 0.0;
+   Motor_Four : Float := 0.0;
    -------------------
    -- Message Handling
    -------------------
 
    procedure Handle_Increase_Voltage_Request(Message : in Message_Record)
-     with Pre => Sample_Module.API.Is_A_Request(Message)
+     with Pre => Motors.API.Is_Increase_Voltage(Message)
    is
       Status  : Message_Status_Type;
-      VoltageOne : Float;
-      VoltageTwo : Float;
-      VoltageThree : Float;
-      VoltageFour: Float;
+      Voltage_One : Float;
+      Voltage_Two : Float;
+      Voltage_Three : Float;
+      Voltage_Four: Float;
       Move_Reply : Message_Record;
    begin
       Motors.API.Increase_Voltage_Decode
         (Message       => Message,
-         VoltageOne    => VoltageOne,
-         VoltageTwo    => VoltageTwo,
-         VoltageThree  => VoltageThree,
-         VoltageFour   => VoltageFour,
-         Decode_Status => Message_Status_Type);
+         VoltageOne    => Voltage_One,
+         VoltageTwo    => Voltage_Two,
+         VoltageThree  => Voltage_Three,
+         VoltageFour   => Voltage_Four,
+         Decode_Status => Status);
       -- moves the drone
-      MotorOne := MotorOne + VoltageOne;
-      MotorTwo := MotorTwo + VoltageTwo;
-      MotorThree := MotorThree + VoltageThree;
-      MotorOne := MotorOne + VoltageFour;
+      Motor_One := Motor_One + Voltage_One;
+      Motor_Two := Motor_Two + Voltage_Two;
+      Motor_Three := Motor_Three + Voltage_Three;
+      Motor_Four := Motor_Four + Voltage_Four;
 
       Move_Reply := Motors.API.Move_Reply_Encode
         (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
-         Success          => True,
-         Priority         => System.Priority);
+         Successful          => True);
       Route_Message (Message => Move_Reply);
    end Handle_Increase_Voltage_Request;
 
    procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
-     with Pre => Sample_Module.API.Is_A_Request(Message)
+     with Pre => Motors.API.Is_Decrease_Voltage(Message)
    is
       Status  : Message_Status_Type;
-      VoltageOne : Float;
-      VoltageTwo : Float;
-      VoltageThree : Float;
-      VoltageFour: Float;
+      Voltage_One : Float;
+      Voltage_Two : Float;
+      Voltage_Three : Float;
+      Voltage_Four: Float;
       Move_Reply : Message_Record;
    begin
       Motors.API.Decrease_Voltage_Decode
         (Message       => Message,
-         VoltageOne    => VoltageOne,
-         VoltageTwo    => VoltageTwo,
-         VoltageThree  => VoltageThree,
-         VoltageFour   => VoltageFour,
-         Decode_Status => Message_Status_Type);
+         VoltageOne    => Voltage_One,
+         VoltageTwo    => Voltage_Two,
+         VoltageThree  => Voltage_Three,
+         VoltageFour   => Voltage_Four,
+         Decode_Status => Status);
       -- moves the drone
-      MotorOne := MotorOne - VoltageOne;
-      MotorTwo := MotorTwo - VoltageTwo;
-      MotorThree := MotorThree - VoltageThree;
-      MotorOne := MotorOne - VoltageFour;
+      Motor_One := Motor_One - Voltage_One;
+      Motor_Two := Motor_Two - Voltage_Two;
+      Motor_Three := Motor_Three - Voltage_Three;
+      Motor_Four := Motor_Four - Voltage_Four;
 
       Move_Reply := Motors.API.Move_Reply_Encode
         (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
-         Success          => True,
-         Priority         => System.Priority);
+         Successful          => True);
       Route_Message (Message => Move_Reply);
    end Handle_Decrease_Voltage_Request;
 
@@ -90,8 +88,10 @@ package body motors.Messages is
    -- This procedure processes exactly one message at a time.
    procedure Process(Message : in Message_Record) is
    begin
-      if Motors.API.Is_Move_Request(Message => Message_Record) then
-         Handle_Move_Request(Message);
+      if Motors.API.Is_Increase_Voltage(Message => Message) then
+         Handle_Increase_Voltage_Request(Message);
+      elsif Motors.API.Is_Decrease_Voltage(Message => Message) then
+         Handle_Decrease_Voltage_Request(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.Motors,
                                             CubedOS.Log_Server.API.Error,

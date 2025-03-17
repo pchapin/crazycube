@@ -13,5 +13,5 @@ message struct -> Decrease_Voltage {
 };
 //confirmation reply
 message struct <- Move_Reply {
-    Boolean Success;
+    Boolean Successful;
 };

@@ -6,21 +6,42 @@
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
 
-with Message_Manager;    -- See the comments in SAMPLE_MODULE-api.ads.
-with Name_Resolver;      -- See the comments in SAMPLE_MODULE-api.ads.
+with Message_Manager;
+with Name_Resolver;
 with CubedOS.Log_Server.API;
+with Ada.Text_IO;
+with Motors.API;
 
 package body Controller.Messages is
    use Message_Manager;
+   use Ada.Text_IO;
 
-   -- The package initializer, if needed. This procedure might be called as the message loop
-   -- (see below) is starting, or perhaps during package elaboration. If this procedure is not
-   -- needed, it should be removed to avoid SPARK flow warnings.
-   --
-   procedure Initialize is
+   procedure Ask_For_Command is
+      Command : Character;
+      Distance : Float := 5.0; -- Distance in inches
+      Command_Message : Message_Record;
    begin
-      null;
-   end Initialize;
+      Put_Line("Please enter the command that you want the drone to follow \n A: LAUNCH \n B: UP ...");
+      Get(Command);
+      Put_Line("You entered: " & Command);
+
+      if Command = 'A' then
+         Put_Line("Launching");
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command = 'B' then
+        Put_Line("Going up");
+      else
+         Put_Line("Error");
+      end if;
+
+   end Ask_For_Command;
 
    -------------------
    -- Message Handling
@@ -34,15 +55,21 @@ package body Controller.Messages is
    -- and dispatching the messages. We recommend that if a single internal package is used that
    -- it should be called Sample_Module.Core (for example).
 
-   procedure Handle_A_Request(Message : in Message_Record)
-    -- with Pre => Sample_Module.API.Is_A_Request(Message)
+   procedure Handle_Move_Reply(Message : in Message_Record)
+    -- with Pre => Motors.API.Is_Move_Reply(Message)
    is
       Status : Message_Status_Type;
+      Success : Boolean;
    begin
-      -- Sample_Module.API.A_Request_Decode(Message, Status);
-      null;
-      -- Act on the request message.
-   end Handle_A_Request;
+      Motors.API.Move_Reply_Decode
+        (Message,
+         Success,
+         Status);
+      if Success then
+         Put_Line("Success!");
+      end if;
+
+   end Handle_Move_Reply;
 
    -----------------------------------
    -- Message Decoding and Dispatching
@@ -51,8 +78,8 @@ package body Controller.Messages is
    -- This procedure processes exactly one message at a time.
    procedure Process(Message : in Message_Record) is
    begin
-      if Sample_Module.API.Is_A_Request(Message) then
-         Handle_A_Request(Message);
+      if Motors.API.Is_Move_Reply(Message) then
+         Handle_Move_Reply(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.Controller,
                                             CubedOS.Log_Server.API.Error,
@@ -70,7 +97,7 @@ package body Controller.Messages is
    task body Message_Loop is
       Incoming_Message : Message_Manager.Message_Record;
    begin
-      Initialize;
+      Ask_For_Command;
       loop
          Message_Manager.Fetch_Message(Name_Resolver.Controller.Module_ID, Incoming_Message);
          Process(Incoming_Message);
