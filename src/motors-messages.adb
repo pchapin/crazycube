@@ -30,6 +30,7 @@ package body motors.Messages is
       Voltage_Three : Float;
       Voltage_Four: Float;
       Move_Reply : Message_Record;
+      Successful : Boolean := true;
    begin
       Motors.API.Increase_Voltage_Decode
         (Message       => Message,
@@ -39,15 +40,31 @@ package body motors.Messages is
          VoltageFour   => Voltage_Four,
          Decode_Status => Status);
       -- moves the drone
-      Motor_One := Motor_One + Voltage_One;
-      Motor_Two := Motor_Two + Voltage_Two;
-      Motor_Three := Motor_Three + Voltage_Three;
-      Motor_Four := Motor_Four + Voltage_Four;
+      if (Motor_One + Voltage_One <= 100.0) then
+         Motor_One := Motor_One + Voltage_One;
+         if (Motor_Two + Voltage_Two <= 100.0) then
+            Motor_Two := Motor_Two + Voltage_Two;
+            if Motor_Three + Voltage_Three <= 100.0 then
+               Motor_Three := Motor_Three + Voltage_Three;
+               if Motor_Four + Voltage_Four <= 100.0 then
+                  Motor_Four := Motor_Four + Voltage_Four;
+               else
+                  Successful := False;
+               end if;
+            else
+               Successful := False;
+            end if;
+         else
+            Successful := False;
+         end if;
+      else
+         Successful := False;
+      end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
         (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
-         Successful          => True);
+         Successful          => Successful);
       Route_Message (Message => Move_Reply);
    end Handle_Increase_Voltage_Request;
 
@@ -60,6 +77,7 @@ package body motors.Messages is
       Voltage_Three : Float;
       Voltage_Four: Float;
       Move_Reply : Message_Record;
+      Successful : Boolean := true;
    begin
       Motors.API.Decrease_Voltage_Decode
         (Message       => Message,
@@ -69,15 +87,31 @@ package body motors.Messages is
          VoltageFour   => Voltage_Four,
          Decode_Status => Status);
       -- moves the drone
-      Motor_One := Motor_One - Voltage_One;
-      Motor_Two := Motor_Two - Voltage_Two;
-      Motor_Three := Motor_Three - Voltage_Three;
-      Motor_Four := Motor_Four - Voltage_Four;
+      if (Motor_One - Voltage_One >= 0.0) then
+         Motor_One := Motor_One - Voltage_One;
+         if (Motor_Two - Voltage_Two >= 0.0) then
+            Motor_Two := Motor_Two - Voltage_Two;
+            if Motor_Three - Voltage_Three >= 0.0 then
+               Motor_Three := Motor_Three - Voltage_Three;
+               if Motor_Four - Voltage_Four >= 0.0 then
+                  Motor_Four := Motor_Four - Voltage_Four;
+               else
+                  Successful := False;
+               end if;
+            else
+               Successful := False;
+            end if;
+         else
+            Successful := False;
+         end if;
+      else
+         Successful := False;
+      end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
         (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
-         Successful          => True);
+         Successful          => Successful);
       Route_Message (Message => Move_Reply);
    end Handle_Decrease_Voltage_Request;
 
