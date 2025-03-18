@@ -9,23 +9,23 @@ pragma SPARK_Mode(On);
 with Message_Manager;
 with Name_Resolver;
 with CubedOS.Log_Server.API;
-with Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 with Motors.API;
 
 package body Controller.Messages is
    use Message_Manager;
-   use Ada.Text_IO;
 
    procedure Ask_For_Command is
-      Command : Character;
+      Command : String(1..50);
+      Last : Natural;
       Distance : Float := 5.0; -- Distance in inches
       Command_Message : Message_Record;
    begin
-      Put_Line("Please enter the command that you want the drone to follow \n A: LAUNCH \n B: UP ...");
-      Get(Command);
-      Put_Line("You entered: " & Command);
+      Put_Line("Please enter the command that you want the drone to follow. A: LAUNCH, B: UP ...");
+      Get_Line(Command, Last);
+      Put_Line("You entered: " & Command(1..Last));
 
-      if Command = 'A' then
+      if Command = "A" then
          Put_Line("Launching");
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -35,7 +35,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = 'B' then
+      elsif Command = "B" then
          Put_Line("Landing");
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -45,7 +45,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = 'C' then
+      elsif Command = "C" then
          Put_Line("Going up");
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -55,7 +55,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = 'D' then
+      elsif Command = "D" then
          Put_Line("Going down");
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -65,7 +65,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = 'E' then
+      elsif Command = "E" then
          Put_Line("Going left");
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -75,7 +75,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
            VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = 'F' then
+      elsif Command = "F" then
          Put_Line("Going right");
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
