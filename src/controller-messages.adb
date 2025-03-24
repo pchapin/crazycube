@@ -111,6 +111,30 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
+      elsif Command(1 .. Last) = "forward" then
+         Put_Line("Going forward");
+         Command := [others => ' '];
+         Last := 0;
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
+      elsif Command(1 .. Last) = "backward" then
+         Put_Line("Going backward");
+         Command := [others => ' '];
+         Last := 0;
+         Command_Message := Motors.API.Increase_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => Distance,
+            VoltageTwo => Distance,
+            VoltageThree => Distance,
+            VoltageFour => Distance);
+         Route_Message(Command_Message);
       else
          Put_Line("Error, command is not valid");
       end if;
