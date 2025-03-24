@@ -16,17 +16,33 @@ package body Controller.Messages is
    use Message_Manager;
 
    procedure Ask_For_Command is
-      Command : String(1..50);
-      Last : Natural;
-      Distance : Float := 5.0; -- Distance in inches
+      Max_Command_Length : constant Natural := 50;
+      Command : String(1..Max_Command_Length);
+      Last : Natural := 0;
+      Current_Char : Character;
+      Distance : constant Float := 5.0; -- Distance in inches
       Command_Message : Message_Record;
    begin
-      Put_Line("Please enter the command that you want the drone to follow. A: LAUNCH, B: UP ...");
-      Get_Line(Command, Last);
-      Put_Line("You entered: " & Command(1..Last));
+      Put_Line("Please enter the command that you want the drone to follow. Enter '*' to submit");
+      loop
+      Ada.Text_IO.Get(Current_Char);
+      if Current_Char = '*' then
+         exit;
+      end if;
 
-      if Command = "A" then
+      if Last < Max_Command_Length then
+         Last := Last + 1;
+         Command(Last) := Current_Char;
+      else
+         Ada.Text_IO.Put_Line("Buffer overflow. Maximum length exceeded.");
+         exit;
+      end if;
+   end loop;
+
+      if Command(1 .. Last) = "launch" then
          Put_Line("Launching");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -35,8 +51,10 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = "B" then
+      elsif Command(1 .. Last) = "land" then
          Put_Line("Landing");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -45,8 +63,10 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = "C" then
+      elsif Command(1 .. Last) = "up" then
          Put_Line("Going up");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -55,8 +75,10 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = "D" then
+      elsif Command(1 .. Last) = "down" then
          Put_Line("Going down");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -65,8 +87,10 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = "E" then
+      elsif Command(1 .. Last) = "left" then
          Put_Line("Going left");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -75,8 +99,10 @@ package body Controller.Messages is
             VoltageThree => Distance,
            VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command = "F" then
+      elsif Command(1 .. Last) = "right" then
          Put_Line("Going right");
+         Command := [others => ' '];
+         Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
@@ -86,7 +112,7 @@ package body Controller.Messages is
             VoltageFour => Distance);
          Route_Message(Command_Message);
       else
-         Put_Line("Error");
+         Put_Line("Error, command is not valid");
       end if;
 
    end Ask_For_Command;
