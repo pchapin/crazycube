@@ -11,6 +11,7 @@ with Name_Resolver;
 with CubedOS.Log_Server.API;
 with Ada.Text_IO; use Ada.Text_IO;
 with Motors.API;
+with Ada.Characters.Handling; use Ada.Characters.Handling;
 
 package body Controller.Messages is
    use Message_Manager;
@@ -40,7 +41,7 @@ package body Controller.Messages is
          end if;
       end loop;
 
-      if Command(1 .. Last) = "launch" then
+      if To_Lower(Command(1 .. Last)) = "launch" then
          Put_Line("Launching");
          Command := [others => ' '];
          Last := 0;
@@ -52,7 +53,7 @@ package body Controller.Messages is
             VoltageThree => 1.0,
             VoltageFour => 1.0);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "land" then
+      elsif To_Lower(Command(1 .. Last)) = "land" then
          Put_Line("Landing");
          Command := [others => ' '];
          Last := 0;
@@ -64,7 +65,7 @@ package body Controller.Messages is
             VoltageThree => 1.0,
             VoltageFour => 1.0);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "up" then
+      elsif To_Lower(Command(1 .. Last)) = "up" then
          Put_Line("Going up");
          Put_Line("Please enter how far you want to go up");
          Last := 0;
@@ -95,7 +96,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "down" then
+      elsif To_Lower(Command(1 .. Last)) = "down" then
          Put_Line("Going down");
          Put_Line("Please enter how far you want to go down");
          Last := 0;
@@ -126,7 +127,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "left" then
+      elsif To_Lower(Command(1 .. Last)) = "left" then
          Put_Line("Going left");
          Put_Line("Please enter how far you want to go left");
          Last := 0;
@@ -157,7 +158,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
            VoltageFour => 0.0);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "right" then
+      elsif To_Lower(Command(1 .. Last)) = "right" then
          Put_Line("Going right");
          Put_Line("Please enter how far you want to go right");
          Last := 0;
@@ -188,7 +189,7 @@ package body Controller.Messages is
             VoltageThree => 0.0,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "forward" then
+      elsif To_Lower(Command(1 .. Last)) = "forward" then
          Put_Line("Going forward");
          Put_Line("Please enter how far you want to go forward");
          Last := 0;
@@ -219,7 +220,7 @@ package body Controller.Messages is
             VoltageThree => Distance,
             VoltageFour => Distance);
          Route_Message(Command_Message);
-      elsif Command(1 .. Last) = "backward" then
+      elsif To_Lower(Command(1 .. Last)) = "backward" then
          Put_Line("Going backward");
          Put_Line("Please enter how far you want to go backward");
          Last := 0;
