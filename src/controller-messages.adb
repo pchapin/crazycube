@@ -22,7 +22,7 @@ package body Controller.Messages is
       How_Far : String(1..Max_Length);
       Last : Natural := 0;
       Current_Char : Character;
-      Distance : Float := 5.0; -- Distance in inches
+      Distance : Duration; -- Distance in inches
       Command_Message : Message_Record;
    begin
       Put_Line("Please enter the command that you want the drone to follow. Enter '*' to submit");
@@ -48,11 +48,13 @@ package body Controller.Messages is
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 1.0,
-            VoltageTwo => 1.0,
-            VoltageThree => 1.0,
-            VoltageFour => 1.0);
+            VoltageOne => 0.5,
+            VoltageTwo => 0.5,
+            VoltageThree => 0.5,
+            VoltageFour => 0.5,
+            Time => 5.0);
          Route_Message(Command_Message);
+         Put_Line("message has been sent");
       elsif To_Lower(Command(1 .. Last)) = "land" then
          Put_Line("Landing");
          Command := [others => ' '];
@@ -60,14 +62,15 @@ package body Controller.Messages is
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 1.0,
-            VoltageTwo => 1.0,
-            VoltageThree => 1.0,
-            VoltageFour => 1.0);
+            VoltageOne => 0.5,
+            VoltageTwo => 0.5,
+            VoltageThree => 0.5,
+            VoltageFour => 0.5,
+            Time => 5.0);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "up" then
          Put_Line("Going up");
-         Put_Line("Please enter how far you want to go up");
+         Put_Line("Please enter how far you want to go up. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -85,20 +88,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => Distance,
-            VoltageTwo => Distance,
-            VoltageThree => Distance,
-            VoltageFour => Distance);
+            VoltageOne => 0.5,
+            VoltageTwo => 0.5,
+            VoltageThree => 0.5,
+            VoltageFour => 0.5,
+            Time => Distance);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "down" then
          Put_Line("Going down");
-         Put_Line("Please enter how far you want to go down");
+         Put_Line("Please enter how far you want to go down. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -116,20 +120,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => Distance,
-            VoltageTwo => Distance,
-            VoltageThree => Distance,
-            VoltageFour => Distance);
+            VoltageOne => 0.5,
+            VoltageTwo => 0.5,
+            VoltageThree => 0.5,
+            VoltageFour => 0.5,
+            Time => Distance);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "left" then
          Put_Line("Going left");
-         Put_Line("Please enter how far you want to go left");
+         Put_Line("Please enter how far you want to go left. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -147,20 +152,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
             VoltageOne => 0.0,
-            VoltageTwo => Distance,
-            VoltageThree => Distance,
-           VoltageFour => 0.0);
+            VoltageTwo => 0.5,
+            VoltageThree => 0.5,
+            VoltageFour => 0.0,
+            Time => Distance);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "right" then
          Put_Line("Going right");
-         Put_Line("Please enter how far you want to go right");
+         Put_Line("Please enter how far you want to go right. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -178,20 +184,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => Distance,
+            VoltageOne => 0.5,
             VoltageTwo => 0.0,
             VoltageThree => 0.0,
-            VoltageFour => Distance);
+            VoltageFour => 0.5,
+            Time => Distance);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "forward" then
          Put_Line("Going forward");
-         Put_Line("Please enter how far you want to go forward");
+         Put_Line("Please enter how far you want to go forward. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -209,7 +216,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -217,12 +224,13 @@ package body Controller.Messages is
             Request_ID => 1,
             VoltageOne => 0.0,
             VoltageTwo => 0.0,
-            VoltageThree => Distance,
-            VoltageFour => Distance);
+            VoltageThree => 0.5,
+            VoltageFour => 0.5,
+            Time => Distance);
          Route_Message(Command_Message);
       elsif To_Lower(Command(1 .. Last)) = "backward" then
          Put_Line("Going backward");
-         Put_Line("Please enter how far you want to go backward");
+         Put_Line("Please enter how far you want to go backward. Enter '*' to submit");
          Last := 0;
 
          loop
@@ -240,19 +248,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Float'Value(How_Far(1..last));
+         Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => Distance,
-            VoltageTwo => Distance,
+            VoltageOne => 0.5,
+            VoltageTwo => 0.5,
             VoltageThree => 0.0,
-            VoltageFour => 0.0);
+            VoltageFour => 0.0,
+            Time => Distance);
          Route_Message(Command_Message);
       else
          Put_Line("Error, command is not valid");
+         Ask_For_Command;
       end if;
 
    end Ask_For_Command;
@@ -281,6 +291,10 @@ package body Controller.Messages is
          Status);
       if Success then
          Put_Line("Success!");
+         Ask_For_Command;
+      else
+         Put_Line("Motors could not carry out command, please try again.");
+         Ask_For_Command;
       end if;
 
    end Handle_Move_Reply;

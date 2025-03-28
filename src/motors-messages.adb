@@ -10,13 +10,15 @@ with Message_Manager;
 with Name_Resolver;
 with motors.API;  -- Needed so that the types in the API can be used here.
 with CubedOS.Log_Server.API;
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 
 package body motors.Messages is
    use Message_Manager;
-   Motor_One : Float := 0.0;
-   Motor_Two : Float := 0.0;
-   Motor_Three : Float := 0.0;
-   Motor_Four : Float := 0.0;
+   Motor_One : Float := 3.0;
+   Motor_Two : Float := 3.0;
+   Motor_Three : Float := 3.0;
+   Motor_Four : Float := 3.0;
    -------------------
    -- Message Handling
    -------------------
@@ -29,6 +31,7 @@ package body motors.Messages is
       Voltage_Two : Float;
       Voltage_Three : Float;
       Voltage_Four: Float;
+      Time : Duration;
       Move_Reply : Message_Record;
       Successful : Boolean := true;
    begin
@@ -38,34 +41,32 @@ package body motors.Messages is
          VoltageTwo    => Voltage_Two,
          VoltageThree  => Voltage_Three,
          VoltageFour   => Voltage_Four,
+         Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One + Voltage_One <= 100.0) then
+      if (Motor_One + Voltage_One <= 4.2) and (Motor_Two + Voltage_Two <= 4.2) and (Motor_Three + Voltage_Three <= 4.2) and (Motor_Four + Voltage_Four <= 4.2) then
          Motor_One := Motor_One + Voltage_One;
-         if (Motor_Two + Voltage_Two <= 100.0) then
-            Motor_Two := Motor_Two + Voltage_Two;
-            if Motor_Three + Voltage_Three <= 100.0 then
-               Motor_Three := Motor_Three + Voltage_Three;
-               if Motor_Four + Voltage_Four <= 100.0 then
-                  Motor_Four := Motor_Four + Voltage_Four;
-               else
-                  Successful := False;
-               end if;
-            else
-               Successful := False;
-            end if;
-         else
-            Successful := False;
-         end if;
+         Motor_Two := Motor_Two + Voltage_Two;
+         Motor_Three := Motor_Three + Voltage_Three;
+         Motor_Four := Motor_Four + Voltage_Four;
+         delay Time;
+         Motor_One := Motor_One - Voltage_One;
+         Motor_Two := Motor_Two - Voltage_Two;
+         Motor_Three := Motor_Three - Voltage_Three;
+         Motor_Four := Motor_Four - Voltage_Four;
       else
          Successful := False;
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
-        (Receiver_Address => Message.Sender_Address,
+        (Receiver_Address => Name_Resolver.Controller,
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);
+      Put_Line("successful. voltage_one = ");
+         Put(Voltage_One, Fore => 0, Aft => 3, Exp => 0);
+      Put_Line("reply has been sent. motor_one = ");
+      Put(Motor_One, Fore => 0, Aft => 3, Exp => 0);
    end Handle_Increase_Voltage_Request;
 
    procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
@@ -76,6 +77,7 @@ package body motors.Messages is
       Voltage_Two : Float;
       Voltage_Three : Float;
       Voltage_Four: Float;
+      Time : Duration;
       Move_Reply : Message_Record;
       Successful : Boolean := true;
    begin
@@ -85,25 +87,19 @@ package body motors.Messages is
          VoltageTwo    => Voltage_Two,
          VoltageThree  => Voltage_Three,
          VoltageFour   => Voltage_Four,
+         Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One - Voltage_One >= 0.0) then
+      if (Motor_One - Voltage_One >= 3.0) and (Motor_Two - Voltage_Two >= 3.0) and (Motor_Three - Voltage_Three >= 3.0) and (Motor_Four - Voltage_Four >= 3.0) then
          Motor_One := Motor_One - Voltage_One;
-         if (Motor_Two - Voltage_Two >= 0.0) then
-            Motor_Two := Motor_Two - Voltage_Two;
-            if Motor_Three - Voltage_Three >= 0.0 then
-               Motor_Three := Motor_Three - Voltage_Three;
-               if Motor_Four - Voltage_Four >= 0.0 then
-                  Motor_Four := Motor_Four - Voltage_Four;
-               else
-                  Successful := False;
-               end if;
-            else
-               Successful := False;
-            end if;
-         else
-            Successful := False;
-         end if;
+         Motor_Two := Motor_Two - Voltage_Two;
+         Motor_Three := Motor_Three - Voltage_Three;
+         Motor_Four := Motor_Four - Voltage_Four;
+         delay Time;
+         Motor_One := Motor_One + Voltage_One;
+         Motor_Two := Motor_Two + Voltage_Two;
+         Motor_Three := Motor_Three + Voltage_Three;
+         Motor_Four := Motor_Four + Voltage_Four;
       else
          Successful := False;
       end if;

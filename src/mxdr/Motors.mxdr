@@ -4,12 +4,14 @@ message struct -> Increase_Voltage {
     Float VoltageTwo;
     Float VoltageThree;
     Float VoltageFour;
+    Duration Time;
 };
 message struct -> Decrease_Voltage {
     Float VoltageOne;
     Float VoltageTwo;
     Float VoltageThree;
     Float VoltageFour;
+    Duration Time;
 };
 //confirmation reply
 message struct <- Move_Reply {
