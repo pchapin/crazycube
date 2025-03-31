@@ -91,6 +91,7 @@ package body motors.Messages is
          Decode_Status => Status);
       -- moves the drone
       if (Motor_One - Voltage_One >= 3.0) and (Motor_Two - Voltage_Two >= 3.0) and (Motor_Three - Voltage_Three >= 3.0) and (Motor_Four - Voltage_Four >= 3.0) then
+         Put_Line("decresing");
          Motor_One := Motor_One - Voltage_One;
          Motor_Two := Motor_Two - Voltage_Two;
          Motor_Three := Motor_Three - Voltage_Three;
@@ -105,7 +106,7 @@ package body motors.Messages is
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
-        (Receiver_Address => Message.Sender_Address,
+        (Receiver_Address => Name_Resolver.Controller,
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);

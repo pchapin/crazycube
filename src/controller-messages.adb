@@ -17,7 +17,7 @@ package body Controller.Messages is
    use Message_Manager;
 
    procedure Ask_For_Command is
-      Max_Length : constant Natural := 50;
+      Max_Length : constant Natural := 10;
       Command : String(1..Max_Length);
       How_Far : String(1..Max_Length);
       Last : Natural := 0;
@@ -37,6 +37,15 @@ package body Controller.Messages is
             Command(Last) := Current_Char;
          else
             Ada.Text_IO.Put_Line("Buffer overflow. Maximum length exceeded.");
+            loop
+               Get(Current_Char);
+               if Current_Char = '*' then
+                  exit;
+               end if;
+            end loop;
+
+            Command := [others => ' '];
+            Last := 0;
             exit;
          end if;
       end loop;
@@ -81,13 +90,30 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
-
          Distance := Duration'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
@@ -113,10 +139,28 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
 
@@ -145,10 +189,28 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
 
@@ -177,10 +239,28 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
 
@@ -209,10 +289,28 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
 
@@ -241,10 +339,28 @@ package body Controller.Messages is
 
             if Last < Max_Length then
                Last := Last + 1;
-               How_Far(Last) := Current_Char;
+               if Current_Char in '0' .. '9' then
+                  Put_Line("Valid number");
+                  How_Far(Last) := Current_Char;
+               else
+                  Put_Line("you must enter a number!");
+                  loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+                  end loop;
+                  Ask_For_Command;
+               end if;
             else
                Put_Line("Buffer overflow. Maximum length exceeded.");
-               exit;
+               loop
+                  Get(Current_Char);
+                  if Current_Char = '*' then
+                     exit;
+                  end if;
+               end loop;
+               Ask_For_Command;
             end if;
          end loop;
 
@@ -262,9 +378,8 @@ package body Controller.Messages is
          Route_Message(Command_Message);
       else
          Put_Line("Error, command is not valid");
-         Ask_For_Command;
       end if;
-
+      Ask_For_Command;
    end Ask_For_Command;
 
    -------------------
