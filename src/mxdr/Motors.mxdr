@@ -1,19 +1,25 @@
 // FILE: Motors.mxdr
+
+typedef float Voltage_Type range 0.0 .. 4.2;
+typedef float Time_Type range 0.0 .. 100.0;
+
+enum Status_Type { Success, Failure };
+
 message struct -> Increase_Voltage {
-    Float VoltageOne;
-    Float VoltageTwo;
-    Float VoltageThree;
-    Float VoltageFour;
-    Duration Time;
+    Voltage_Type VoltageOne;
+    Voltage_Type VoltageTwo;
+    Voltage_Type VoltageThree;
+    Voltage_Type VoltageFour;
+    Time_Type Time;
 };
 message struct -> Decrease_Voltage {
-    Float VoltageOne;
-    Float VoltageTwo;
-    Float VoltageThree;
-    Float VoltageFour;
-    Duration Time;
+    Voltage_Type VoltageOne;
+    Voltage_Type VoltageTwo;
+    Voltage_Type VoltageThree;
+    Voltage_Type VoltageFour;
+    Time_Type Time;
 };
 //confirmation reply
 message struct <- Move_Reply {
-    Boolean Successful;
+    Status_Type Successful;
 };

@@ -10,7 +10,7 @@ with Message_Manager;
 with Name_Resolver;
 with CubedOS.Log_Server.API;
 with Ada.Text_IO; use Ada.Text_IO;
-with Motors.API;
+with Motors.API; use Motors.API;
 with Ada.Characters.Handling; use Ada.Characters.Handling;
 
 package body Controller.Messages is
@@ -22,7 +22,7 @@ package body Controller.Messages is
       How_Far : String(1..Max_Length);
       Last : Natural := 0;
       Current_Char : Character;
-      Distance : Duration; -- Distance in inches
+      Distance : Motors.API.Time_Type; -- Distance in inches
       Command_Message : Message_Record;
    begin
       Put_Line("Please enter the command that you want the drone to follow. Enter '*' to submit");
@@ -114,7 +114,7 @@ package body Controller.Messages is
                Ask_For_Command;
             end if;
          end loop;
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -164,7 +164,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Decrease_Voltage_Encode
@@ -214,7 +214,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -264,7 +264,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -314,7 +314,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -364,7 +364,7 @@ package body Controller.Messages is
             end if;
          end loop;
 
-         Distance := Duration'Value(How_Far(1..last));
+         Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
@@ -398,13 +398,13 @@ package body Controller.Messages is
     -- with Pre => Motors.API.Is_Move_Reply(Message)
    is
       Status : Message_Status_Type;
-      Success : Boolean;
+      Successful : Motors.API.Status_Type;
    begin
       Motors.API.Move_Reply_Decode
         (Message,
-         Success,
+         Successful,
          Status);
-      if Success then
+      if Successful = Success then
          Put_Line("Success!");
          Ask_For_Command;
       else
