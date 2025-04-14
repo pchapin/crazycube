@@ -1,25 +1,38 @@
 // FILE: Sensors.mxdr
+typedef int Sensor_Type range -25000 .. 25000;
+enum Status_Type { Success, Failure };
+typedef int State_Type range 0 .. 100000;
+
 message struct -> Get_Gyro_Measurements_Request {
     void;
 };
 message struct <- Get_Gyro_Measurements_Reply {
-    Boolean Successful;
-    Float GyroscopeX;
-    Float GyroscopeY;
-    Float GyroscopeZ;
+    Status_Type Successful;
+    Sensor_Type GyroscopeX;
+    Sensor_Type GyroscopeY;
+    Sensor_Type GyroscopeZ;
 };
 message struct -> Get_Accel_Measurements_Request {
     void;
 };
 message struct <- Get_Accel_Measurements_Reply {
-    Boolean Successful;
-    Float AccelerometerX;
-    Float AccelerometerY;
-    Float AccelerometerZ;
+    Status_Type Successful;
+    Sensor_Type AccelerometerX;
+    Sensor_Type AccelerometerY;
+    Sensor_Type AccelerometerZ;
 };
-message struct -> Set_Dumy_Altitude {
-    Float inches;
+message struct -> Increase_Dumy_Altitude {
+    State_Type Inches;
+};
+message struct <- Increase_Dumy_Altitude_Reply {
+    Status_Type Successful;
+};
+message struct -> Decrease_Dumy_Altitude {
+    State_Type Inches;
+};
+message struct <- Decrease_Dumy_Altitude_Reply {
+    Status_Type Successful;
 };
 message struct <- Get_Dumy_Altitude {
-    Float inches;
+    State_Type Inches;
 };

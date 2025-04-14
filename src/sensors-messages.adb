@@ -8,16 +8,68 @@ pragma SPARK_Mode(On);
 
 with Message_Manager;
 with Name_Resolver;
-with Sensors.API;
+with Sensors.API; use Sensors.API;
 with CubedOS.Log_Server.API;
 
 package body Sensors.Messages is
    use Message_Manager;
+   Altitude : State_Type;
 
    -------------------
    -- Message Handling
    -------------------
+   procedure Handle_Increase_Dumy_Altitude(Message : in Message_Record)
+     with Pre => Sensors.API.Is_Increase_Dumy_Altitude(Message)
+   is
+      Increase_Reply : Message_Record;
+      Inches : State_Type;
+      Status : Message_Status_Type;
+      Successful : Sensors.API.Status_Type := Success;
+   begin
+      Sensors.API.Increase_Dumy_Altitude_Decode
+        (Message => Message,
+         Inches => Inches,
+         Decode_Status => Status);
+      if Altitude + Inches > 10000 then
+         Successful := Failure;
+      else
+         Altitude := Altitude + Inches;
+      end if;
 
+      Increase_Reply := sensors.API.Increase_Dumy_Altitude_Reply_Encode
+        (Receiver_Address => Name_Resolver.Controller,
+         Request_ID => 1,
+         Successful => Successful);
+      Route_Message(Message => Increase_Reply);
+   end Handle_Increase_Dumy_Altitude;
+
+   procedure Handle_Decrease_Dumy_Altitude(Message : in Message_Record)
+     with Pre => Sensors.API.Is_Decrease_Dumy_Altitude(Message)
+   is
+      Decrease_Reply : Message_Record;
+      Inches : State_Type;
+      Status : Message_Status_Type;
+      Successful : Sensors.API.Status_Type := Success;
+   begin
+      Sensors.API.Decrease_Dumy_Altitude_Decode
+        (Message => Message,
+         Inches => Inches,
+         Decode_Status => Status);
+
+      if Altitude - Inches < 0 then
+         Successful := Failure;
+      else
+         Altitude := Altitude - Inches;
+      end if;
+
+      Decrease_Reply := sensors.API.Decrease_Dumy_Altitude_Reply_Encode
+        (Receiver_Address => Name_Resolver.Controller,
+         Request_ID => 1,
+         Successful => Successful);
+      Route_Message(Message => Decrease_Reply);
+   end Handle_Decrease_Dumy_Altitude;
+
+   -- returns 0 for all because of the simulation
    procedure Handle_Get_Gyro_Measurements_Request(Message : in Message_Record)
      with Pre => Sensors.API.Is_Get_Gyro_Measurements_Request(Message)
    is
@@ -26,13 +78,14 @@ package body Sensors.Messages is
       Measurments_Reply := Sensors.API.Get_Gyro_Measurements_Reply_Encode
         (Message.Sender_Address,
          1,
-         True,
-         0.0,
-         0.0,
-         0.0);
+         Success,
+         0,
+         0,
+         0);
       Route_Message(Measurments_Reply);
    end Handle_Get_Gyro_Measurements_Request;
 
+   -- returns 0 for all because of the simulation
    procedure Handle_Get_Accel_Measurements_Request(Message : in Message_Record)
      with Pre => Sensors.API.Is_Get_Accel_Measurements_Request(Message)
    is
@@ -41,10 +94,10 @@ package body Sensors.Messages is
       Measurments_Reply := Sensors.API.Get_Accel_Measurements_Reply_Encode
         (Message.Sender_Address,
          1,
-         True,
-         0.0,
-         0.0,
-         0.0);
+         Success,
+         0,
+         0,
+         0);
       Route_Message(Measurments_Reply);
    end Handle_Get_Accel_Measurements_Request;
 
@@ -58,6 +111,10 @@ package body Sensors.Messages is
          Handle_Get_Gyro_Measurements_Request(Message);
       elsif Sensors.API.Is_Get_Accel_Measurements_Request(Message) then
          Handle_Get_Accel_Measurements_Request(Message);
+      elsif Sensors.API.Is_Decrease_Dumy_Altitude(Message) then
+         Handle_Decrease_Dumy_Altitude(Message);
+      elsif Sensors.API.Is_Increase_Dumy_Altitude(Message) then
+         Handle_Increase_Dumy_Altitude(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.Sensors,
                                             CubedOS.Log_Server.API.Error,

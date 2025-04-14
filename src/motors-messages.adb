@@ -9,6 +9,7 @@ pragma SPARK_Mode(On);
 with Message_Manager;
 with Name_Resolver;
 with Motors.API; use Motors.API; -- Needed so that the types in the API can be used here.
+with Sensors.API; use Sensors.API;
 with CubedOS.Log_Server.API;
 with Ada.Text_IO; use Ada.Text_IO;
 
@@ -18,8 +19,6 @@ package body motors.Messages is
    Motor_Two : Voltage_Type := 30;
    Motor_Three : Voltage_Type := 30;
    Motor_Four : Voltage_Type := 30;
-   Max_Drone_Height : constant Time_Type := 100;
-   Drone_Height : Time_Type := 0; -- how many inches the drone is off the ground.
 
    -------------------
    -- Message Handling
@@ -35,6 +34,7 @@ package body motors.Messages is
       Voltage_Four: Voltage_Type;
       Time : Time_Type;
       Move_Reply : Message_Record;
+      Increase_Sensors : Message_Record;
       Successful : Motors.API.Status_Type := Success;
    begin
       Motors.API.Increase_Voltage_Decode
@@ -49,8 +49,7 @@ package body motors.Messages is
       if (Motor_One + Voltage_One <= 42) and
         (Motor_Two + Voltage_Two <= 42) and
         (Motor_Three + Voltage_Three <= 42) and
-        (Motor_Four + Voltage_Four <= 42) and
-        (Time + Drone_Height < Max_Drone_Height) then
+        (Motor_Four + Voltage_Four <= 42) then
 
          Motor_One := Motor_One + Voltage_One;
          Motor_Two := Motor_Two + Voltage_Two;
@@ -61,6 +60,12 @@ package body motors.Messages is
          Motor_Two := Motor_Two - Voltage_Two;
          Motor_Three := Motor_Three - Voltage_Three;
          Motor_Four := Motor_Four - Voltage_Four;
+
+         Increase_Sensors := Sensors.API.Increase_Dumy_Altitude_Encode
+           (Sender_Address => Name_Resolver.Sensors,
+            Request_ID => 1,
+            Inches => State_Type'Value(Time_Type'Image(Time)));
+         Route_Message(Increase_Sensors);
       else
          Successful := Failure;
       end if;
@@ -83,6 +88,7 @@ package body motors.Messages is
       Voltage_Four: Voltage_Type;
       Time : Time_Type;
       Move_Reply : Message_Record;
+      Decrease_Sensors : Message_Record;
       Successful : Motors.API.Status_Type := Success;
    begin
       Motors.API.Decrease_Voltage_Decode
@@ -97,8 +103,7 @@ package body motors.Messages is
       if (Motor_One - Voltage_One >= 30) and
         (Motor_Two - Voltage_Two >= 30) and
         (Motor_Three - Voltage_Three >= 30) and
-        (Motor_Four - Voltage_Four >= 30) and
-        (Time + Drone_Height > 0) then
+        (Motor_Four - Voltage_Four >= 30)then
 
          Put_Line("decresing");
          Motor_One := Motor_One - Voltage_One;
@@ -106,13 +111,18 @@ package body motors.Messages is
          Motor_Three := Motor_Three - Voltage_Three;
          Motor_Four := Motor_Four - Voltage_Four;
 
-         Drone_Height := Drone_Height - Time;
-
          delay Duration'Value(Time_Type'Image(Time));
+
          Motor_One := Motor_One + Voltage_One;
          Motor_Two := Motor_Two + Voltage_Two;
          Motor_Three := Motor_Three + Voltage_Three;
          Motor_Four := Motor_Four + Voltage_Four;
+
+         Decrease_Sensors := Sensors.API.Decrease_Dumy_Altitude_Encode
+           (Sender_Address => Name_Resolver.Sensors,
+            Request_ID => 1,
+            Inches => State_Type'Value(Time_Type'Image(Time)));
+         Route_Message(Decrease_Sensors);
       else
          Successful := Failure;
       end if;
