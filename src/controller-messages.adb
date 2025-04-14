@@ -15,6 +15,23 @@ with Ada.Characters.Handling; use Ada.Characters.Handling;
 
 package body Controller.Messages is
    use Message_Manager;
+   Is_Landed : Boolean := true;
+
+   procedure Land is
+      Command_Message : Message_Record;
+   begin
+      Put_Line("landing...");
+      Command_Message := Motors.API.Decrease_Voltage_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID => 1,
+            VoltageOne => 5,
+            VoltageTwo => 5,
+            VoltageThree => 5,
+            VoltageFour => 5,
+            Time => 5);
+      Is_Landed := true;
+      Route_Message(Command_Message);
+   end Land;
 
    procedure Ask_For_Command is
       Max_Length : constant Natural := 10;
@@ -24,6 +41,7 @@ package body Controller.Messages is
       Current_Char : Character;
       Distance : Motors.API.Time_Type; -- Distance in inches
       Command_Message : Message_Record;
+      Max_Distance : constant Natural := 100;
    begin
       Put_Line("Please enter the command that you want the drone to follow. Enter '*' to submit");
       loop
@@ -50,34 +68,27 @@ package body Controller.Messages is
          end if;
       end loop;
 
-      if To_Lower(Command(1 .. Last)) = "launch" then
+      if To_Lower(Command(1 .. Last)) = "launch" and Is_Landed then
          Put_Line("Launching");
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.5,
-            VoltageFour => 0.5,
-            Time => 5.0);
+            VoltageOne => 5,
+            VoltageTwo => 5,
+            VoltageThree => 5,
+            VoltageFour => 5,
+            Time => 5);
+         Is_Landed := false;
          Route_Message(Command_Message);
          Put_Line("message has been sent");
-      elsif To_Lower(Command(1 .. Last)) = "land" then
+      elsif To_Lower(Command(1 .. Last)) = "land" and not Is_landed then
          Put_Line("Landing");
          Command := [others => ' '];
          Last := 0;
-         Command_Message := Motors.API.Decrease_Voltage_Encode
-           (Sender_Address => Name_Resolver.Motors,
-            Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.5,
-            VoltageFour => 0.5,
-            Time => 5.0);
-         Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "up" then
+         Land;
+      elsif To_Lower(Command(1 .. Last)) = "up" and not Is_landed then
          Put_Line("Going up");
          Put_Line("Please enter how far you want to go up. Enter '*' to submit");
          Last := 0;
@@ -114,19 +125,25 @@ package body Controller.Messages is
                Ask_For_Command;
             end if;
          end loop;
+
+         if Natural'Value(How_Far(1..last)) > Max_Distance then
+            Put_Line("distance is too far.");
+            Ask_For_Command;
+         end if;
+
          Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.5,
-            VoltageFour => 0.5,
+            VoltageOne => 5,
+            VoltageTwo => 5,
+            VoltageThree => 5,
+            VoltageFour => 5,
             Time => Distance);
          Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "down" then
+      elsif To_Lower(Command(1 .. Last)) = "down" and not Is_landed then
          Put_Line("Going down");
          Put_Line("Please enter how far you want to go down. Enter '*' to submit");
          Last := 0;
@@ -170,13 +187,13 @@ package body Controller.Messages is
          Command_Message := Motors.API.Decrease_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.5,
-            VoltageFour => 0.5,
+            VoltageOne => 5,
+            VoltageTwo => 5,
+            VoltageThree => 5,
+            VoltageFour => 5,
             Time => Distance);
          Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "left" then
+      elsif To_Lower(Command(1 .. Last)) = "left" and not Is_landed then
          Put_Line("Going left");
          Put_Line("Please enter how far you want to go left. Enter '*' to submit");
          Last := 0;
@@ -214,19 +231,21 @@ package body Controller.Messages is
             end if;
          end loop;
 
+
+
          Distance := Time_Type'Value(How_Far(1..last));
          Command := [others => ' '];
          Last := 0;
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.0,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.5,
-            VoltageFour => 0.0,
+            VoltageOne => 0,
+            VoltageTwo => 5,
+            VoltageThree => 5,
+            VoltageFour => 0,
             Time => Distance);
          Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "right" then
+      elsif To_Lower(Command(1 .. Last)) = "right" and not Is_landed then
          Put_Line("Going right");
          Put_Line("Please enter how far you want to go right. Enter '*' to submit");
          Last := 0;
@@ -270,13 +289,13 @@ package body Controller.Messages is
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.0,
-            VoltageThree => 0.0,
-            VoltageFour => 0.5,
+            VoltageOne => 5,
+            VoltageTwo => 0,
+            VoltageThree => 0,
+            VoltageFour => 5,
             Time => Distance);
          Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "forward" then
+      elsif To_Lower(Command(1 .. Last)) = "forward" and not Is_landed then
          Put_Line("Going forward");
          Put_Line("Please enter how far you want to go forward. Enter '*' to submit");
          Last := 0;
@@ -320,13 +339,13 @@ package body Controller.Messages is
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.0,
-            VoltageTwo => 0.0,
-            VoltageThree => 0.5,
-            VoltageFour => 0.5,
+            VoltageOne => 0,
+            VoltageTwo => 0,
+            VoltageThree => 5,
+            VoltageFour => 5,
             Time => Distance);
          Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Last)) = "backward" then
+      elsif To_Lower(Command(1 .. Last)) = "backward" and not Is_landed then
          Put_Line("Going backward");
          Put_Line("Please enter how far you want to go backward. Enter '*' to submit");
          Last := 0;
@@ -370,17 +389,21 @@ package body Controller.Messages is
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID => 1,
-            VoltageOne => 0.5,
-            VoltageTwo => 0.5,
-            VoltageThree => 0.0,
-            VoltageFour => 0.0,
+            VoltageOne => 5,
+            VoltageTwo => 5,
+            VoltageThree => 0,
+            VoltageFour => 0,
             Time => Distance);
          Route_Message(Command_Message);
       else
-         Put_Line("Error, command is not valid");
+         Put_Line("Error, can not carry out command.");
+         if not Is_Landed then
+            Land;
+         end if;
+         Ask_For_Command;
       end if;
-      Ask_For_Command;
    end Ask_For_Command;
+
 
    -------------------
    -- Message Handling

@@ -17,3 +17,9 @@ message struct <- Get_Accel_Measurements_Reply {
     Float AccelerometerY;
     Float AccelerometerZ;
 };
+message struct -> Set_Dumy_Altitude {
+    Float inches;
+};
+message struct <- Get_Dumy_Altitude {
+    Float inches;
+};

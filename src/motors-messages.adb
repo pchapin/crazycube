@@ -8,17 +8,19 @@ pragma SPARK_Mode(On);
 
 with Message_Manager;
 with Name_Resolver;
-with motors.API;  -- Needed so that the types in the API can be used here.
+with Motors.API; use Motors.API; -- Needed so that the types in the API can be used here.
 with CubedOS.Log_Server.API;
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Float_Text_IO; use Ada.Float_Text_IO;
 
 package body motors.Messages is
    use Message_Manager;
-   Motor_One : Float := 3.0;
-   Motor_Two : Float := 3.0;
-   Motor_Three : Float := 3.0;
-   Motor_Four : Float := 3.0;
+   Motor_One : Voltage_Type := 30;
+   Motor_Two : Voltage_Type := 30;
+   Motor_Three : Voltage_Type := 30;
+   Motor_Four : Voltage_Type := 30;
+   Max_Drone_Height : constant Time_Type := 100;
+   Drone_Height : Time_Type := 0; -- how many inches the drone is off the ground.
+
    -------------------
    -- Message Handling
    -------------------
@@ -27,13 +29,13 @@ package body motors.Messages is
      with Pre => Motors.API.Is_Increase_Voltage(Message)
    is
       Status  : Message_Status_Type;
-      Voltage_One : Float;
-      Voltage_Two : Float;
-      Voltage_Three : Float;
-      Voltage_Four: Float;
-      Time : Duration;
+      Voltage_One : Voltage_Type;
+      Voltage_Two : Voltage_Type;
+      Voltage_Three : Voltage_Type;
+      Voltage_Four: Voltage_Type;
+      Time : Time_Type;
       Move_Reply : Message_Record;
-      Successful : Boolean := true;
+      Successful : Motors.API.Status_Type := Success;
    begin
       Motors.API.Increase_Voltage_Decode
         (Message       => Message,
@@ -44,18 +46,23 @@ package body motors.Messages is
          Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One + Voltage_One <= 4.2) and (Motor_Two + Voltage_Two <= 4.2) and (Motor_Three + Voltage_Three <= 4.2) and (Motor_Four + Voltage_Four <= 4.2) then
+      if (Motor_One + Voltage_One <= 42) and
+        (Motor_Two + Voltage_Two <= 42) and
+        (Motor_Three + Voltage_Three <= 42) and
+        (Motor_Four + Voltage_Four <= 42) and
+        (Time + Drone_Height < Max_Drone_Height) then
+
          Motor_One := Motor_One + Voltage_One;
          Motor_Two := Motor_Two + Voltage_Two;
          Motor_Three := Motor_Three + Voltage_Three;
          Motor_Four := Motor_Four + Voltage_Four;
-         delay Time;
+         delay Duration'Value(Time_Type'Image(Time));
          Motor_One := Motor_One - Voltage_One;
          Motor_Two := Motor_Two - Voltage_Two;
          Motor_Three := Motor_Three - Voltage_Three;
          Motor_Four := Motor_Four - Voltage_Four;
       else
-         Successful := False;
+         Successful := Failure;
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
@@ -63,23 +70,20 @@ package body motors.Messages is
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);
-      Put_Line("successful. voltage_one = ");
-         Put(Voltage_One, Fore => 0, Aft => 3, Exp => 0);
-      Put_Line("reply has been sent. motor_one = ");
-      Put(Motor_One, Fore => 0, Aft => 3, Exp => 0);
+      Put_Line("reply has been sent. motor_one = " & Voltage_Type'Image(Motor_One));
    end Handle_Increase_Voltage_Request;
 
    procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
      with Pre => Motors.API.Is_Decrease_Voltage(Message)
    is
       Status  : Message_Status_Type;
-      Voltage_One : Float;
-      Voltage_Two : Float;
-      Voltage_Three : Float;
-      Voltage_Four: Float;
-      Time : Duration;
+      Voltage_One : Voltage_Type;
+      Voltage_Two : Voltage_Type;
+      Voltage_Three : Voltage_Type;
+      Voltage_Four: Voltage_Type;
+      Time : Time_Type;
       Move_Reply : Message_Record;
-      Successful : Boolean := true;
+      Successful : Motors.API.Status_Type := Success;
    begin
       Motors.API.Decrease_Voltage_Decode
         (Message       => Message,
@@ -90,19 +94,27 @@ package body motors.Messages is
          Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One - Voltage_One >= 3.0) and (Motor_Two - Voltage_Two >= 3.0) and (Motor_Three - Voltage_Three >= 3.0) and (Motor_Four - Voltage_Four >= 3.0) then
+      if (Motor_One - Voltage_One >= 30) and
+        (Motor_Two - Voltage_Two >= 30) and
+        (Motor_Three - Voltage_Three >= 30) and
+        (Motor_Four - Voltage_Four >= 30) and
+        (Time + Drone_Height > 0) then
+
          Put_Line("decresing");
          Motor_One := Motor_One - Voltage_One;
          Motor_Two := Motor_Two - Voltage_Two;
          Motor_Three := Motor_Three - Voltage_Three;
          Motor_Four := Motor_Four - Voltage_Four;
-         delay Time;
+
+         Drone_Height := Drone_Height - Time;
+
+         delay Duration'Value(Time_Type'Image(Time));
          Motor_One := Motor_One + Voltage_One;
          Motor_Two := Motor_Two + Voltage_Two;
          Motor_Three := Motor_Three + Voltage_Three;
          Motor_Four := Motor_Four + Voltage_Four;
       else
-         Successful := False;
+         Successful := Failure;
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode

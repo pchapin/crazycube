@@ -1,7 +1,7 @@
 // FILE: Motors.mxdr
 
-typedef float Voltage_Type range 0.0 .. 4.2;
-typedef float Time_Type range 0.0 .. 100.0;
+typedef int Voltage_Type range 0 .. 42;
+typedef int Time_Type range 0 .. 1000;
 
 enum Status_Type { Success, Failure };
 

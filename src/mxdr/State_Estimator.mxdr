@@ -1,15 +1,21 @@
 // FILE: State_Estimator.mxdr
+typedef int Sensor_Type range -25000 .. 25000;
+typedef int State_Type range 0 .. 100000;
+
 message struct -> Get_State_Request {
-    Float GyroscopeX;
-    Float GyroscopeY;
-    Float GyroscopeZ;
-    Float AccelerometerX;
-    Float AccelerometerY;
-    Float AccelerometerZ;
+    Sensor_Type GyroscopeX;
+    Sensor_Type GyroscopeY;
+    Sensor_Type GyroscopeZ;
+    Sensor_Type AccelerometerX;
+    Sensor_Type AccelerometerY;
+    Sensor_Type AccelerometerZ;
 };
 message struct <- Get_State_Reply {
-    Float AttitudeRoll;
-    Float AttitudePitch;
-    Float AttitudeYaw;
-    Float Altitude;
+    State_Type AttitudeRoll;
+    State_Type AttitudePitch;
+    State_Type AttitudeYaw;
+    State_Type Altitude;
+};
+message struct <- Get_Dumy_State_Request {
+    State_Type Dumy_Altitude;
 };
