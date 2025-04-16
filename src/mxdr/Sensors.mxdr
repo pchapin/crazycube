@@ -33,6 +33,9 @@ message struct -> Decrease_Dumy_Altitude {
 message struct <- Decrease_Dumy_Altitude_Reply {
     Status_Type Successful;
 };
-message struct <- Get_Dumy_Altitude {
+message struct -> Get_Dumy_Altitude_Request {
+    void;
+};
+message struct <- Get_Dumy_Altitude_Reply {
     State_Type Inches;
 };

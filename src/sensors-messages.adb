@@ -10,6 +10,7 @@ with Message_Manager;
 with Name_Resolver;
 with Sensors.API; use Sensors.API;
 with CubedOS.Log_Server.API;
+with Ada.Text_IO;
 
 package body Sensors.Messages is
    use Message_Manager;
@@ -18,6 +19,18 @@ package body Sensors.Messages is
    -------------------
    -- Message Handling
    -------------------
+   procedure Handle_Get_Dumy_Altitude(Message: in Message_Record)
+     with Pre => Sensors.API.Is_Get_Dumy_Altitude_Request(Message)
+   is
+      Altitude_Reply : Message_Record;
+   begin
+      Altitude_Reply := sensors.API.Get_Dumy_Altitude_Reply_Encode
+        (Receiver_Address => Name_Resolver.Controller,
+         Request_ID => 1,
+         Inches => Altitude);
+      Route_Message(Altitude_Reply);
+   end Handle_Get_Dumy_Altitude;
+
    procedure Handle_Increase_Dumy_Altitude(Message : in Message_Record)
      with Pre => Sensors.API.Is_Increase_Dumy_Altitude(Message)
    is
@@ -59,6 +72,7 @@ package body Sensors.Messages is
       if Altitude - Inches < 0 then
          Successful := Failure;
       else
+         Ada.Text_IO.Put_Line("altitude is: " & State_Type'Image(Altitude));
          Altitude := Altitude - Inches;
       end if;
 
@@ -115,6 +129,8 @@ package body Sensors.Messages is
          Handle_Decrease_Dumy_Altitude(Message);
       elsif Sensors.API.Is_Increase_Dumy_Altitude(Message) then
          Handle_Increase_Dumy_Altitude(Message);
+      elsif Sensors.API.Is_Get_Dumy_Altitude_Request(Message) then
+         Handle_Get_Dumy_Altitude(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.Sensors,
                                             CubedOS.Log_Server.API.Error,

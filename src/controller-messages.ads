@@ -9,6 +9,7 @@ pragma SPARK_Mode(On);
 with System;
 
 package Controller.Messages is
+   procedure Ask_For_Command;
 
    task Message_Loop is
       pragma Priority(System.Default_Priority);
