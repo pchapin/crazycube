@@ -23,3 +23,15 @@ message struct -> Decrease_Voltage {
 message struct <- Move_Reply {
     Status_Type Successful;
 };
+message struct -> Launch_Request {
+    void;
+};
+message struct <- Launch_Reply {
+    Status_Type Successful;
+};
+message struct -> Land_Request {
+    Time_Type Time;
+};
+message struct <- Land_Reply {
+    Status_Type Successful;
+};

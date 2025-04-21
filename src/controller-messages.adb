@@ -17,12 +17,13 @@ with Ada.Characters.Handling; use Ada.Characters.Handling;
 package body Controller.Messages is
    use Message_Manager;
    Max_Length : constant Natural := 10; -- for command length
-   How_Far : String(1..Max_Length);
-   Command : String(1..Max_Length);
+   How_Far : String(1..Max_Length);     -- how far the drone is being asked to go
+   Command : String(1..Max_Length);     -- the command being asked
    How_Far_Last : Natural := 0;
    Command_Last : Natural := 0;
    Max_Height : constant Natural := 100;
-   -- Min_Height : constant Natural := 3;
+   In_Air : Boolean := False;
+   Min_Height : constant Natural := 3;
 
    procedure Get_How_Far is
       Current_Char : Character;
@@ -99,27 +100,15 @@ package body Controller.Messages is
          end if;
       end loop;
 
-      if To_Lower(Command(1 .. Command_Last)) = "launch" then
+      if To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air then
             Put_Line("");
          Put_Line("Checking sensors...");
          Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
            (Sender_Address => Name_Resolver.Sensors,
             Request_ID => 1);
          Route_Message(Sensor_Message);
-            --  Command := [others => ' '];
-            --  Last := 0;
-            --  Command_Message := Motors.API.Increase_Voltage_Encode
-            --    (Sender_Address => Name_Resolver.Motors,
-            --     Request_ID => 1,
-            --     VoltageOne => 5,
-            --     VoltageTwo => 5,
-            --     VoltageThree => 5,
-            --     VoltageFour => 5,
-            --     Time => 3);
-            --  Route_Message(Command_Message);
-            --  Put_Line("Message Has Been Sent");
 
-      elsif To_Lower(Command(1 .. Command_Last)) = "land" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "land" and In_Air then
          Put_Line("");
          Put_Line("Checking sensors...");
          Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
@@ -127,7 +116,7 @@ package body Controller.Messages is
             Request_ID => 1);
          Route_Message(Sensor_Message);
 
-      elsif To_Lower(Command(1 .. Command_Last)) = "up" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "up" and In_Air then
             Put_Line("");
             Put_Line("Please enter how far you want to go up. Enter '*' to submit");
             Get_How_Far;
@@ -136,26 +125,13 @@ package body Controller.Messages is
                Put_Line("Distance is Too Far.");
                Ask_For_Command;
             end if;
-
-            --  Distance := Time_Type'Value(How_Far(1..last));
-            --  Command := [others => ' '];
-            --  Last := 0;
-            --  Command_Message := Motors.API.Increase_Voltage_Encode
-            --    (Sender_Address => Name_Resolver.Motors,
-            --     Request_ID => 1,
-            --     VoltageOne => 5,
-            --     VoltageTwo => 5,
-            --     VoltageThree => 5,
-            --     VoltageFour => 5,
-            --     Time => Distance);
-            --  Route_Message(Command_Message);
             Put_Line("");
             Put_Line("Checking sensors...");
             Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
               (Sender_Address => Name_Resolver.Sensors,
                Request_ID => 1);
             Route_Message(Sensor_Message);
-      elsif To_Lower(Command(1 .. Command_Last)) = "down" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air then
          Put_Line("");
          Put_Line("Please enter how far you want to go down. Enter '*' to submit");
          Get_How_Far;
@@ -166,19 +142,8 @@ package body Controller.Messages is
            (Sender_Address => Name_Resolver.Sensors,
             Request_ID => 1);
          Route_Message(Sensor_Message);
-            --  Distance := Time_Type'Value(How_Far(1..last));
-            --  Command := [others => ' '];
-            --  Last := 0;
-            --  Command_Message := Motors.API.Decrease_Voltage_Encode
-            --    (Sender_Address => Name_Resolver.Motors,
-            --     Request_ID => 1,
-            --     VoltageOne => 5,
-            --     VoltageTwo => 5,
-            --     VoltageThree => 5,
-            --     VoltageFour => 5,
-            --     Time => Distance);
-            --  Route_Message(Command_Message);
-      elsif To_Lower(Command(1 .. Command_Last)) = "left" then
+
+      elsif To_Lower(Command(1 .. Command_Last)) = "left" and In_Air then
          Put_Line("");
          Put_Line("Please enter how far you want to go left. Enter '*' to submit");
          Get_How_Far;
@@ -195,7 +160,7 @@ package body Controller.Messages is
             Time => Distance);
          Route_Message(Command_Message);
 
-      elsif To_Lower(Command(1 .. Command_Last)) = "right" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "right" and In_Air then
          Put_Line("");
          Put_Line("Please enter how far you want to go right. Enter '*' to submit");
          Get_How_Far;
@@ -212,7 +177,7 @@ package body Controller.Messages is
             Time => Distance);
          Route_Message(Command_Message);
 
-      elsif To_Lower(Command(1 .. Command_Last)) = "forward" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "forward" and In_Air then
          Put_Line("");
          Put_Line("Please enter how far you want to go forward. Enter '*' to submit");
          Get_How_Far;
@@ -229,7 +194,7 @@ package body Controller.Messages is
             Time => Distance);
          Route_Message(Command_Message);
 
-      elsif To_Lower(Command(1 .. Command_Last)) = "backward" then
+      elsif To_Lower(Command(1 .. Command_Last)) = "backward" and In_Air then
          Put_Line("");
          Put_Line("Please enter how far you want to go backward. Enter '*' to submit");
          Get_How_Far;
@@ -246,15 +211,6 @@ package body Controller.Messages is
             Time => Distance);
          Route_Message(Command_Message);
 
-      --  elsif To_Lower(Command(1 .. Command_Last)) = "exit" then
-      --     if not In_Air then
-      --        Put_Line("");
-      --        Put_Line("Thank you for flying the CrazyFlie2.1!!! :)");
-      --     else
-      --        Put_Line("");
-      --        Put_Line("Drone has to be landed in order to exit.");
-      --        Ask_For_Command;
-      --     end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "help" then
          Put_Line("");
          Put_Line("Available Commands Are:");
@@ -281,7 +237,7 @@ package body Controller.Messages is
    -- it should be called Sample_Module.Core (for example).
 
    procedure Handle_Move_Reply(Message : in Message_Record)
-    -- with Pre => Motors.API.Is_Move_Reply(Message)
+    with Pre => Motors.API.Is_Move_Reply(Message)
    is
       Status : Message_Status_Type;
       Successful : Motors.API.Status_Type;
@@ -300,6 +256,96 @@ package body Controller.Messages is
 
    end Handle_Move_Reply;
 
+   procedure Handle_Dumy_Altitude_Reply(Message : in Message_Record)
+     with Pre => Sensors.API.Is_Get_Dumy_Altitude_Reply(Message)
+   is
+      Height : State_Type;
+      Status : Message_Status_Type;
+   begin
+      Sensors.API.Get_Dumy_Altitude_Reply_Decode
+        (Message => Message,
+         Inches => Height,
+         Decode_Status => Status);
+      if To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air and Height = 0 then
+         Put_Line("alt = " & State_Type'Image(Height));
+         Route_Message(Motors.API.Launch_Request_Encode
+           (Sender_Address => Name_Resolver.Motors,
+            Request_ID     => 1));
+         -- in the reply, In_Air will be set to true
+      elsif To_Lower(Command(1 .. Command_Last)) = "land" and In_Air and Height > 0 then
+         Route_Message(Motors.API.Land_Request_Encode
+                         (Sender_Address => Name_Resolver.Motors,
+                          Request_ID     => 1,
+                          Time           => Time_Type'Value(State_Type'Image(Height))));
+         -- In_Air will be set to false
+      elsif To_Lower(Command(1 .. Command_Last)) = "up" and In_Air and
+        Height + State_Type'Value(How_Far(1 .. How_Far_Last)) < State_Type'Value(Natural'Image(Max_Height)) then
+         Route_Message(Motors.API.Increase_Voltage_Encode
+                       (Sender_Address => Name_Resolver.Motors,
+                        Request_ID => 1,
+                        VoltageOne => 5,
+                        VoltageTwo => 5,
+                        VoltageThree => 5,
+                        VoltageFour => 5,
+                        Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
+      elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air and
+        Height - State_Type'Value(How_Far(1 .. How_Far_Last)) > State_Type'Value(Natural'Image(Min_Height)) then
+         Route_Message(Motors.API.Decrease_Voltage_Encode
+                       (Sender_Address => Name_Resolver.Motors,
+                        Request_ID => 1,
+                        VoltageOne => 5,
+                        VoltageTwo => 5,
+                        VoltageThree => 5,
+                        VoltageFour => 5,
+                        Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
+      else
+         Put_Line("Command got corrupted. Please try again.");
+         Ask_For_Command;
+      end if;
+   end Handle_Dumy_Altitude_Reply;
+
+   procedure Handle_Launch_Reply(Message : in Message_Record)
+     with Pre => Motors.API.Is_Launch_Reply(Message)
+   is
+      Status : Message_Status_Type;
+      Successful : Motors.API.Status_Type;
+   begin
+      Motors.API.Launch_Reply_Decode
+        (Message       => Message,
+         Successful    => Successful,
+         Decode_Status => Status);
+      if Successful = Success and Status = Success then
+         Put_Line("Launch was successful!");
+         In_Air := True;
+         Ask_For_Command;
+      else
+         Put_Line("Launch was not successsful, please try again!");
+         Ask_For_Command;
+      end if;
+
+   end Handle_Launch_Reply;
+
+   procedure Handle_Land_Reply(Message : in Message_Record)
+     with Pre => Motors.API.Is_Land_Reply(Message)
+   is
+      Status : Message_Status_Type;
+      Successful : Motors.API.Status_Type;
+   begin
+      Motors.API.Land_Reply_Decode
+        (Message => Message,
+         Successful => Successful,
+         Decode_Status => Status);
+
+      if Successful = Success and Status = Success then
+         Put_Line("Landing was successful!");
+         In_Air := False;
+         Ask_For_Command;
+      else
+         Put_Line("Landing was not successful, please try again!");
+         Ask_For_Command;
+      end if;
+
+   end Handle_Land_Reply;
    -----------------------------------
    -- Message Decoding and Dispatching
    -----------------------------------
@@ -309,6 +355,12 @@ package body Controller.Messages is
    begin
       if Motors.API.Is_Move_Reply(Message) then
          Handle_Move_Reply(Message);
+      elsif Sensors.API.Is_Get_Dumy_Altitude_Reply(Message) then
+         Handle_Dumy_Altitude_Reply(Message);
+      elsif Motors.API.Is_Launch_Reply(Message) then
+         Handle_Launch_Reply(Message);
+      elsif Motors.API.Is_Land_Reply(Message) then
+         Handle_Land_Reply(Message);
       else
          CubedOS.Log_Server.API.Log_Message(Name_Resolver.Controller,
                                             CubedOS.Log_Server.API.Error,

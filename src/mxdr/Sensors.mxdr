@@ -21,13 +21,13 @@ message struct <- Get_Accel_Measurements_Reply {
     Sensor_Type AccelerometerY;
     Sensor_Type AccelerometerZ;
 };
-message struct -> Increase_Dumy_Altitude {
+message struct -> Increase_Dumy_Altitude_Request {
     State_Type Inches;
 };
 message struct <- Increase_Dumy_Altitude_Reply {
     Status_Type Successful;
 };
-message struct -> Decrease_Dumy_Altitude {
+message struct -> Decrease_Dumy_Altitude_Request {
     State_Type Inches;
 };
 message struct <- Decrease_Dumy_Altitude_Reply {
