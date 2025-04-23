@@ -28,6 +28,8 @@ package body Controller.Messages is
    procedure Get_How_Far(Is_Number : out Boolean) is
       Current_Char : Character;
    begin
+      Put_Line("");
+      Put_Line("Please enter how many inches you want to go " & To_Lower(Command(1 .. Command_Last)) & ". Enter '*' to submit");
       How_Far_Last := 0;
 
          loop
@@ -101,7 +103,7 @@ package body Controller.Messages is
       end loop;
 
       if To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air then
-            Put_Line("");
+         Put_Line("");
          Put_Line("Checking sensors...");
          Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
            (Sender_Address => Name_Resolver.Sensors,
@@ -117,9 +119,8 @@ package body Controller.Messages is
          Route_Message(Sensor_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "up" and In_Air then
-            Put_Line("");
-            Put_Line("Please enter how far you want to go up. Enter '*' to submit");
-            Get_How_Far;
+         Get_How_Far;
+
             if Natural'Value(How_Far(1..How_Far_Last)) > Max_Height then
                Put_Line("");
                Put_Line("Distance is Too Far.");
@@ -132,8 +133,6 @@ package body Controller.Messages is
                Request_ID => 1);
             Route_Message(Sensor_Message);
       elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air then
-         Put_Line("");
-         Put_Line("Please enter how many inches you want to go down. Enter '*' to submit");
          Get_How_Far;
 
          Put_Line("");
@@ -144,8 +143,6 @@ package body Controller.Messages is
          Route_Message(Sensor_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "left" and In_Air then
-         Put_Line("");
-         Put_Line("Please enter how many inches you want to go left. Enter '*' to submit");
          Get_How_Far;
          Put_Line("Going left...");
 
@@ -164,8 +161,6 @@ package body Controller.Messages is
          Route_Message(Command_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "right" and In_Air then
-         Put_Line("");
-         Put_Line("Please enter how many inches you want to go right. Enter '*' to submit");
          Get_How_Far;
          Put_Line("Going right...");
 
@@ -182,8 +177,6 @@ package body Controller.Messages is
          Route_Message(Command_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "forward" and In_Air then
-         Put_Line("");
-         Put_Line("Please enter how many inches you want to go forward. Enter '*' to submit");
          Get_How_Far;
          Put_Line("Going forward...");
 
@@ -200,8 +193,6 @@ package body Controller.Messages is
          Route_Message(Command_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "backward" and In_Air then
-         Put_Line("");
-         Put_Line("Please enter how many inches you want to go backward. Enter '*' to submit");
          Get_How_Far;
          Put_Line("Going backward...");
 
@@ -220,8 +211,16 @@ package body Controller.Messages is
       elsif To_Lower(Command(1 .. Command_Last)) = "help" then
          Put_Line("");
          Put_Line("Available Commands Are:");
-         Put_Line("Launch, Land, Up, Down, Left, Right, Forward, Backward, Exit, Help");
+         Put_Line("Launch, Land, Up, Down, Left, Right, Forward, Backward, Altitude, Help");
          Ask_For_Command;
+      elsif To_Lower(Command(1 .. Command_Last)) = "altitude" then
+         Put_Line("");
+         Put_Line("Checking sensors...");
+         Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
+           (Sender_Address => Name_Resolver.Sensors,
+            Request_ID => 1);
+         Route_Message(Sensor_Message);
+
       else
          Put_Line("");
          Put_Line("Error, can not carry out command. Please Try again");
@@ -306,6 +305,9 @@ package body Controller.Messages is
                         VoltageThree => 5,
                         VoltageFour => 5,
                         Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
+      elsif To_Lower(Command(1 .. Command_Last)) = "altitude" then
+         Put_Line("alt = " & State_Type'Image(Height));
+         Ask_For_Command;
       else
          Put_Line("Command cannot be carried out. Please try again.");
          Ask_For_Command;
@@ -387,7 +389,7 @@ package body Controller.Messages is
       Incoming_Message : Message_Manager.Message_Record;
    begin
       Put_Line("Welcome to the CrazyFlie2.1 drone. This system uses CubedOS. The available commands are:");
-      Put_Line("Launch, Land, Up, Down, Left, Right, Forward, Backward, Exit, Help");
+      Put_Line("Launch, Land, Up, Down, Left, Right, Forward, Backward, Altitude, Help");
       Ask_For_Command;
       loop
          Message_Manager.Fetch_Message(Name_Resolver.Controller.Module_ID, Incoming_Message);
