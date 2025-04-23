@@ -43,16 +43,17 @@ package body Controller.Messages is
             if Current_Char in '0' .. '9' then
                How_Far(How_Far_Last) := Current_Char;
             else
-               Put_Line("");
-               Put_Line("You must enter a number!");
-               Put_Line("Aborting Command!");
-               loop
-                  Get(Current_Char);
-                  if Current_Char = '*' then
-                     exit;
-                  end if;
-               end loop;
-               Ask_For_Command;
+               Is_Number := False;
+            --     Put_Line("");
+            --     Put_Line("You must enter a number!");
+            --     Put_Line("Aborting Command!");
+            --     loop
+            --        Get(Current_Char);
+            --        if Current_Char = '*' then
+            --           exit;
+            --        end if;
+            --     end loop;
+            --     Ask_For_Command;
             end if;
          else
             Put_Line("");
@@ -73,6 +74,7 @@ package body Controller.Messages is
       Command_Message : Message_Record;
       Sensor_Message : Message_Record;
       Current_Char : Character;
+      Is_Number : Boolean := True;
    begin
       Command := [others => ' '];
       Command_Last := 0;
@@ -119,8 +121,9 @@ package body Controller.Messages is
          Route_Message(Sensor_Message);
 
       elsif To_Lower(Command(1 .. Command_Last)) = "up" and In_Air then
-         Get_How_Far;
+         Get_How_Far(Is_Number);
 
+         if Is_Number then
             if Natural'Value(How_Far(1..How_Far_Last)) > Max_Height then
                Put_Line("");
                Put_Line("Distance is Too Far.");
@@ -132,81 +135,108 @@ package body Controller.Messages is
               (Sender_Address => Name_Resolver.Sensors,
                Request_ID => 1);
             Route_Message(Sensor_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
+
       elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air then
-         Get_How_Far;
+         Get_How_Far(Is_Number);
 
-         Put_Line("");
-         Put_Line("Checking sensors...");
-         Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
-           (Sender_Address => Name_Resolver.Sensors,
-            Request_ID => 1);
-         Route_Message(Sensor_Message);
-
+         if Is_Number then
+            Put_Line("");
+            Put_Line("Checking sensors...");
+            Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
+              (Sender_Address => Name_Resolver.Sensors,
+               Request_ID => 1);
+            Route_Message(Sensor_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "left" and In_Air then
-         Get_How_Far;
-         Put_Line("Going left...");
+         Get_How_Far(Is_Number);
+         if Is_Number then
+            Put_Line("Going left...");
 
-         Distance := Time_Type'Value(How_Far(1..How_Far_last));
+            Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
          -- if distance is > 500 then too far!!
 
-         Command_Message := Motors.API.Increase_Voltage_Encode
-           (Sender_Address => Name_Resolver.Motors,
-            Request_ID => 1,
-            VoltageOne => 0,
-            VoltageTwo => 5,
-            VoltageThree => 5,
-            VoltageFour => 0,
-            Time => Distance);
-         Route_Message(Command_Message);
-
+            Command_Message := Motors.API.Increase_Voltage_Encode
+              (Sender_Address => Name_Resolver.Motors,
+               Request_ID => 1,
+               VoltageOne => 0,
+               VoltageTwo => 5,
+               VoltageThree => 5,
+               VoltageFour => 0,
+               Time => Distance);
+            Route_Message(Command_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "right" and In_Air then
-         Get_How_Far;
-         Put_Line("Going right...");
+         Get_How_Far(Is_Number);
+         if Is_Number then
+            Put_Line("Going right...");
 
-         Distance := Time_Type'Value(How_Far(1..How_Far_last));
+            Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-         Command_Message := Motors.API.Increase_Voltage_Encode
-           (Sender_Address => Name_Resolver.Motors,
-            Request_ID => 1,
-            VoltageOne => 5,
-            VoltageTwo => 0,
-            VoltageThree => 0,
-            VoltageFour => 5,
-            Time => Distance);
-         Route_Message(Command_Message);
-
+            Command_Message := Motors.API.Increase_Voltage_Encode
+              (Sender_Address => Name_Resolver.Motors,
+               Request_ID => 1,
+               VoltageOne => 5,
+               VoltageTwo => 0,
+               VoltageThree => 0,
+               VoltageFour => 5,
+               Time => Distance);
+            Route_Message(Command_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "forward" and In_Air then
-         Get_How_Far;
-         Put_Line("Going forward...");
+         Get_How_Far(Is_Number);
+         if Is_Number then
+            Put_Line("Going forward...");
 
-         Distance := Time_Type'Value(How_Far(1..How_Far_last));
+            Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-         Command_Message := Motors.API.Increase_Voltage_Encode
-           (Sender_Address => Name_Resolver.Motors,
-            Request_ID => 1,
-            VoltageOne => 0,
-            VoltageTwo => 0,
-            VoltageThree => 5,
-            VoltageFour => 5,
-            Time => Distance);
-         Route_Message(Command_Message);
+            Command_Message := Motors.API.Increase_Voltage_Encode
+              (Sender_Address => Name_Resolver.Motors,
+               Request_ID => 1,
+               VoltageOne => 0,
+               VoltageTwo => 0,
+               VoltageThree => 5,
+               VoltageFour => 5,
+               Time => Distance);
+            Route_Message(Command_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
 
       elsif To_Lower(Command(1 .. Command_Last)) = "backward" and In_Air then
-         Get_How_Far;
-         Put_Line("Going backward...");
+         Get_How_Far(Is_Number);
+         if Is_Number then
+            Put_Line("Going backward...");
 
-         Distance := Time_Type'Value(How_Far(1..How_Far_last));
+            Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-         Command_Message := Motors.API.Increase_Voltage_Encode
-           (Sender_Address => Name_Resolver.Motors,
-            Request_ID => 1,
-            VoltageOne => 5,
-            VoltageTwo => 5,
-            VoltageThree => 0,
-            VoltageFour => 0,
-            Time => Distance);
-         Route_Message(Command_Message);
+            Command_Message := Motors.API.Increase_Voltage_Encode
+              (Sender_Address => Name_Resolver.Motors,
+               Request_ID => 1,
+               VoltageOne => 5,
+               VoltageTwo => 5,
+               VoltageThree => 0,
+               VoltageFour => 0,
+               Time => Distance);
+            Route_Message(Command_Message);
+         else
+            Put_Line("You must enter a number!");
+            Ask_For_Command;
+         end if;
 
       elsif To_Lower(Command(1 .. Command_Last)) = "help" then
          Put_Line("");
