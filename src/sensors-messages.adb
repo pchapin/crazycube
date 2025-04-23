@@ -24,7 +24,7 @@ package body Sensors.Messages is
    is
       Altitude_Reply : Message_Record;
    begin
-      Ada.Text_IO.Put_Line("In Request. Altitude =" & State_Type'Image(Altitude));
+      Ada.Text_IO.Put_Line("dumy Altitude = " & State_Type'Image(Altitude));
       Altitude_Reply := Sensors.API.Get_Dumy_Altitude_Reply_Encode
         (Receiver_Address => Name_Resolver.Controller,
          Request_ID => 1,
@@ -47,7 +47,7 @@ package body Sensors.Messages is
       if Altitude + Inches > 100 then
          Successful := Failure;
       else
-         Ada.Text_IO.Put_Line("Altitude is now: " & State_Type'Image(Altitude));
+         --  Ada.Text_IO.Put_Line("Altitude is now: " & State_Type'Image(Altitude));
          Altitude := Altitude + Inches;
       end if;
 
@@ -74,7 +74,7 @@ package body Sensors.Messages is
       if Altitude - Inches < 0 then
          Successful := Failure;
       else
-         Ada.Text_IO.Put_Line("altitude is now: " & State_Type'Image(Altitude));
+         --  Ada.Text_IO.Put_Line("altitude is now: " & State_Type'Image(Altitude));
          Altitude := Altitude - Inches;
       end if;
 

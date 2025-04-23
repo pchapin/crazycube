@@ -11,14 +11,13 @@ with Name_Resolver;
 with Motors.API; use Motors.API; -- Needed so that the types in the API can be used here.
 with Sensors.API; use Sensors.API;
 with CubedOS.Log_Server.API;
-with Ada.Text_IO; use Ada.Text_IO;
 
 package body motors.Messages is
    use Message_Manager;
-   Motor_One : Voltage_Type := 20; -- with a voltage of 20, the motors are not moving
-   Motor_Two : Voltage_Type := 20;
-   Motor_Three : Voltage_Type := 20;
-   Motor_Four : Voltage_Type := 20;
+   Motor_One : Voltage_Type := 0; -- with a voltage of 0, the motors are not moving
+   Motor_Two : Voltage_Type := 0;
+   Motor_Three : Voltage_Type := 0;
+   Motor_Four : Voltage_Type := 0;
 
    -------------------
    -- Message Handling
@@ -46,10 +45,10 @@ package body motors.Messages is
          Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One + Voltage_One <= 42) and
-        (Motor_Two + Voltage_Two <= 42) and
-        (Motor_Three + Voltage_Three <= 42) and
-        (Motor_Four + Voltage_Four <= 42) and
+      if (Motor_One + Voltage_One <= 35) and
+        (Motor_Two + Voltage_Two <= 35) and
+        (Motor_Three + Voltage_Three <= 35) and
+        (Motor_Four + Voltage_Four <= 35) and
         Status = Success then
 
          Motor_One := Motor_One + Voltage_One;
@@ -79,7 +78,6 @@ package body motors.Messages is
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);
-      Put_Line("reply has been sent. motor_one = " & Voltage_Type'Image(Motor_One));
    end Handle_Increase_Voltage_Request;
 
    procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
@@ -104,13 +102,12 @@ package body motors.Messages is
          Time          => Time,
          Decode_Status => Status);
       -- moves the drone
-      if (Motor_One - Voltage_One >= 30) and
-        (Motor_Two - Voltage_Two >= 30) and
-        (Motor_Three - Voltage_Three >= 30) and
-        (Motor_Four - Voltage_Four >= 30) and
+      if (Motor_One - Voltage_One >= 25) and
+        (Motor_Two - Voltage_Two >= 25) and
+        (Motor_Three - Voltage_Three >= 25) and
+        (Motor_Four - Voltage_Four >= 25) and
         Status = Success then
 
-         Put_Line("decresing");
          Motor_One := Motor_One - Voltage_One;
          Motor_Two := Motor_Two - Voltage_Two;
          Motor_Three := Motor_Three - Voltage_Three;
@@ -188,10 +185,10 @@ package body motors.Messages is
 
          delay Duration'Value(Time_Type'Image(Time))/2.0;
 
-         Motor_One := 20;
-         Motor_Two := 20;
-         Motor_Three := 20;
-         Motor_Four := 20;
+         Motor_One := 0;
+         Motor_Two := 0;
+         Motor_Three := 0;
+         Motor_Four := 0;
 
          Route_Message(Sensors.API.Decrease_Dumy_Altitude_Request_Encode
                       (Sender_Address => Name_Resolver.Sensors,
@@ -217,9 +214,11 @@ package body motors.Messages is
       elsif Motors.API.Is_Decrease_Voltage(Message => Message) then
          Handle_Decrease_Voltage_Request(Message);
       elsif Sensors.API.Is_Decrease_Dumy_Altitude_Reply(Message => Message) then
-         Put_Line("Altitude has decreased");
+         null;
+         -- altitude has decreased
       elsif Sensors.API.Is_Increase_Dumy_Altitude_Reply(Message => Message) then
-         Put_Line("Altitude has Increased");
+         null;
+         -- altitude has increased
       elsif Motors.API.Is_Launch_Request(Message => Message) then
          Handle_Launch_Request(Message);
       elsif Motors.API.Is_Land_Request(Message => Message) then

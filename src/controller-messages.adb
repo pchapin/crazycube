@@ -133,7 +133,7 @@ package body Controller.Messages is
             Route_Message(Sensor_Message);
       elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air then
          Put_Line("");
-         Put_Line("Please enter how far you want to go down. Enter '*' to submit");
+         Put_Line("Please enter how many inches you want to go down. Enter '*' to submit");
          Get_How_Far;
 
          Put_Line("");
@@ -145,8 +145,9 @@ package body Controller.Messages is
 
       elsif To_Lower(Command(1 .. Command_Last)) = "left" and In_Air then
          Put_Line("");
-         Put_Line("Please enter how far you want to go left. Enter '*' to submit");
+         Put_Line("Please enter how many inches you want to go left. Enter '*' to submit");
          Get_How_Far;
+         Put_Line("Going left...");
 
          Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
@@ -162,8 +163,9 @@ package body Controller.Messages is
 
       elsif To_Lower(Command(1 .. Command_Last)) = "right" and In_Air then
          Put_Line("");
-         Put_Line("Please enter how far you want to go right. Enter '*' to submit");
+         Put_Line("Please enter how many inches you want to go right. Enter '*' to submit");
          Get_How_Far;
+         Put_Line("Going right...");
 
          Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
@@ -179,8 +181,9 @@ package body Controller.Messages is
 
       elsif To_Lower(Command(1 .. Command_Last)) = "forward" and In_Air then
          Put_Line("");
-         Put_Line("Please enter how far you want to go forward. Enter '*' to submit");
+         Put_Line("Please enter how many inches you want to go forward. Enter '*' to submit");
          Get_How_Far;
+         Put_Line("Going forward...");
 
          Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
@@ -196,8 +199,9 @@ package body Controller.Messages is
 
       elsif To_Lower(Command(1 .. Command_Last)) = "backward" and In_Air then
          Put_Line("");
-         Put_Line("Please enter how far you want to go backward. Enter '*' to submit");
+         Put_Line("Please enter how many inches you want to go backward. Enter '*' to submit");
          Get_How_Far;
+         Put_Line("Going backward...");
 
          Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
@@ -250,7 +254,7 @@ package body Controller.Messages is
          Put_Line("Success!");
          Ask_For_Command;
       else
-         Put_Line("Motors could not carry out command, please try again.");
+         Put_Line("Motors could not safely carry out command, please try again.");
          Ask_For_Command;
       end if;
 
@@ -267,19 +271,20 @@ package body Controller.Messages is
          Inches => Height,
          Decode_Status => Status);
       if To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air and Height = 0 then
-         Put_Line("alt = " & State_Type'Image(Height));
+         --  Put_Line("alt = " & State_Type'Image(Height));
+         Put_Line("Launching motors...");
          Route_Message(Motors.API.Launch_Request_Encode
            (Sender_Address => Name_Resolver.Motors,
             Request_ID     => 1));
-         -- in the reply, In_Air will be set to true
       elsif To_Lower(Command(1 .. Command_Last)) = "land" and In_Air and Height > 0 then
+         Put_Line("Landing Motors");
          Route_Message(Motors.API.Land_Request_Encode
                          (Sender_Address => Name_Resolver.Motors,
                           Request_ID     => 1,
                           Time           => Time_Type'Value(State_Type'Image(Height))));
-         -- In_Air will be set to false
       elsif To_Lower(Command(1 .. Command_Last)) = "up" and In_Air and
         Height + State_Type'Value(How_Far(1 .. How_Far_Last)) < State_Type'Value(Natural'Image(Max_Height)) then
+         Put_Line("Going up...");
          Route_Message(Motors.API.Increase_Voltage_Encode
                        (Sender_Address => Name_Resolver.Motors,
                         Request_ID => 1,
@@ -290,6 +295,7 @@ package body Controller.Messages is
                         Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
       elsif To_Lower(Command(1 .. Command_Last)) = "down" and In_Air and
         Height - State_Type'Value(How_Far(1 .. How_Far_Last)) > State_Type'Value(Natural'Image(Min_Height)) then
+         Put_Line("Going down...");
          Route_Message(Motors.API.Decrease_Voltage_Encode
                        (Sender_Address => Name_Resolver.Motors,
                         Request_ID => 1,
@@ -299,7 +305,7 @@ package body Controller.Messages is
                         VoltageFour => 5,
                         Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
       else
-         Put_Line("Command got corrupted. Please try again.");
+         Put_Line("Command cannot be carried out. Please try again.");
          Ask_For_Command;
       end if;
    end Handle_Dumy_Altitude_Reply;
