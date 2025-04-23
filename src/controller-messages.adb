@@ -25,7 +25,7 @@ package body Controller.Messages is
    In_Air : Boolean := False;
    Min_Height : constant Natural := 3;
 
-   procedure Get_How_Far is
+   procedure Get_How_Far(Is_Number : out Boolean) is
       Current_Char : Character;
    begin
       How_Far_Last := 0;
@@ -150,6 +150,8 @@ package body Controller.Messages is
          Put_Line("Going left...");
 
          Distance := Time_Type'Value(How_Far(1..How_Far_last));
+
+         -- if distance is > 500 then too far!!
 
          Command_Message := Motors.API.Increase_Voltage_Encode
            (Sender_Address => Name_Resolver.Motors,
