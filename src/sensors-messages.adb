@@ -10,7 +10,6 @@ with Message_Manager;
 with Name_Resolver;
 with Sensors.API; use Sensors.API;
 with CubedOS.Log_Server.API;
-with Ada.Text_IO;
 
 package body Sensors.Messages is
    use Message_Manager;
@@ -24,7 +23,6 @@ package body Sensors.Messages is
    is
       Altitude_Reply : Message_Record;
    begin
-      Ada.Text_IO.Put_Line("dumy Altitude = " & State_Type'Image(Altitude));
       Altitude_Reply := Sensors.API.Get_Dumy_Altitude_Reply_Encode
         (Receiver_Address => Name_Resolver.Controller,
          Request_ID => 1,

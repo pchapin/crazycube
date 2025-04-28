@@ -44,16 +44,6 @@ package body Controller.Messages is
                How_Far(How_Far_Last) := Current_Char;
             else
                Is_Number := False;
-            --     Put_Line("");
-            --     Put_Line("You must enter a number!");
-            --     Put_Line("Aborting Command!");
-            --     loop
-            --        Get(Current_Char);
-            --        if Current_Char = '*' then
-            --           exit;
-            --        end if;
-            --     end loop;
-            --     Ask_For_Command;
             end if;
          else
             Put_Line("");
@@ -126,7 +116,7 @@ package body Controller.Messages is
          if Is_Number then
             if Natural'Value(How_Far(1..How_Far_Last)) > Max_Height then
                Put_Line("");
-               Put_Line("Distance is Too Far.");
+               Put_Line("Distance is Too Far. Aborting command!");
                Ask_For_Command;
             end if;
             Put_Line("");
@@ -136,7 +126,7 @@ package body Controller.Messages is
                Request_ID => 1);
             Route_Message(Sensor_Message);
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
          end if;
 
@@ -151,7 +141,7 @@ package body Controller.Messages is
                Request_ID => 1);
             Route_Message(Sensor_Message);
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
          end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "left" and In_Air then
@@ -161,19 +151,24 @@ package body Controller.Messages is
 
             Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-         -- if distance is > 500 then too far!!
+            if Distance < 100 then
 
-            Command_Message := Motors.API.Increase_Voltage_Encode
-              (Sender_Address => Name_Resolver.Motors,
-               Request_ID => 1,
-               VoltageOne => 0,
-               VoltageTwo => 5,
-               VoltageThree => 5,
-               VoltageFour => 0,
-               Time => Distance);
-            Route_Message(Command_Message);
+               Command_Message := Motors.API.Increase_Voltage_Encode
+                 (Sender_Address => Name_Resolver.Motors,
+                  Request_ID => 1,
+                  VoltageOne => 0,
+                  VoltageTwo => 5,
+                  VoltageThree => 5,
+                  VoltageFour => 0,
+                  Time => Distance);
+               Route_Message(Command_Message);
+            else
+               Put_Line("Distance is too far. Aborting command!");
+               Ask_For_Command;
+            end if;
+
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
          end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "right" and In_Air then
@@ -183,17 +178,23 @@ package body Controller.Messages is
 
             Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-            Command_Message := Motors.API.Increase_Voltage_Encode
-              (Sender_Address => Name_Resolver.Motors,
-               Request_ID => 1,
-               VoltageOne => 5,
-               VoltageTwo => 0,
-               VoltageThree => 0,
-               VoltageFour => 5,
-               Time => Distance);
-            Route_Message(Command_Message);
+            if Distance < 100 then
+               Command_Message := Motors.API.Increase_Voltage_Encode
+                 (Sender_Address => Name_Resolver.Motors,
+                  Request_ID => 1,
+                  VoltageOne => 5,
+                  VoltageTwo => 0,
+                  VoltageThree => 0,
+                  VoltageFour => 5,
+                  Time => Distance);
+               Route_Message(Command_Message);
+            else
+               Put_Line("Distance is too far. Aborting command!");
+               Ask_For_Command;
+            end if;
+
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
          end if;
       elsif To_Lower(Command(1 .. Command_Last)) = "forward" and In_Air then
@@ -203,17 +204,23 @@ package body Controller.Messages is
 
             Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-            Command_Message := Motors.API.Increase_Voltage_Encode
-              (Sender_Address => Name_Resolver.Motors,
-               Request_ID => 1,
-               VoltageOne => 0,
-               VoltageTwo => 0,
-               VoltageThree => 5,
-               VoltageFour => 5,
-               Time => Distance);
-            Route_Message(Command_Message);
+            if Distance < 100 then
+               Command_Message := Motors.API.Increase_Voltage_Encode
+                 (Sender_Address => Name_Resolver.Motors,
+                  Request_ID => 1,
+                  VoltageOne => 0,
+                  VoltageTwo => 0,
+                  VoltageThree => 5,
+                  VoltageFour => 5,
+                  Time => Distance);
+               Route_Message(Command_Message);
+            else
+               Put_Line("Distance is too far. Aborting command!");
+               Ask_For_Command;
+            end if;
+
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
          end if;
 
@@ -224,17 +231,23 @@ package body Controller.Messages is
 
             Distance := Time_Type'Value(How_Far(1..How_Far_last));
 
-            Command_Message := Motors.API.Increase_Voltage_Encode
-              (Sender_Address => Name_Resolver.Motors,
-               Request_ID => 1,
-               VoltageOne => 5,
-               VoltageTwo => 5,
-               VoltageThree => 0,
-               VoltageFour => 0,
-               Time => Distance);
-            Route_Message(Command_Message);
+            if Distance < 100 then
+               Command_Message := Motors.API.Increase_Voltage_Encode
+                 (Sender_Address => Name_Resolver.Motors,
+                  Request_ID => 1,
+                  VoltageOne => 5,
+                  VoltageTwo => 5,
+                  VoltageThree => 0,
+                  VoltageFour => 0,
+                  Time => Distance);
+               Route_Message(Command_Message);
+            else
+               Put_Line("Distance is too far. Aborting command!");
+               Ask_For_Command;
+            end if;
+
          else
-            Put_Line("You must enter a number!");
+            Put_Line("You must enter a number. Aborting Command.");
             Ask_For_Command;
          end if;
 
@@ -245,12 +258,11 @@ package body Controller.Messages is
          Ask_For_Command;
       elsif To_Lower(Command(1 .. Command_Last)) = "altitude" then
          Put_Line("");
-         Put_Line("Checking sensors...");
+         Put_Line("Checking alt sensors...");
          Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
            (Sender_Address => Name_Resolver.Sensors,
             Request_ID => 1);
          Route_Message(Sensor_Message);
-
       else
          Put_Line("");
          Put_Line("Error, can not carry out command. Please Try again");
@@ -262,14 +274,6 @@ package body Controller.Messages is
    -------------------
    -- Message Handling
    -------------------
-
-   -- Here is where the details of handing the messages is done. Probably there will be a
-   -- separate subprogram for each message, but the exact organization is, obviously, dependent
-   -- on the needs of the module. It might be useful to put these message handling subprograms
-   -- into a private sibling package. That would move the complex details of message handling to
-   -- a different file and reduce clutter in this file. This file is really just about decoding
-   -- and dispatching the messages. We recommend that if a single internal package is used that
-   -- it should be called Sample_Module.Core (for example).
 
    procedure Handle_Move_Reply(Message : in Message_Record)
     with Pre => Motors.API.Is_Move_Reply(Message)
@@ -301,8 +305,10 @@ package body Controller.Messages is
         (Message => Message,
          Inches => Height,
          Decode_Status => Status);
-      if To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air and Height = 0 then
-         --  Put_Line("alt = " & State_Type'Image(Height));
+      if To_Lower(Command(1 .. Command_Last)) = "altitude" then
+         Put_Line("drone altitude = " & State_Type'Image(Height));
+         Ask_For_Command;
+      elsif To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air and Height = 0 then
          Put_Line("Launching motors...");
          Route_Message(Motors.API.Launch_Request_Encode
            (Sender_Address => Name_Resolver.Motors,
@@ -335,11 +341,8 @@ package body Controller.Messages is
                         VoltageThree => 5,
                         VoltageFour => 5,
                         Time => Time_Type'Value(How_Far(1 .. How_Far_Last))));
-      elsif To_Lower(Command(1 .. Command_Last)) = "altitude" then
-         Put_Line("alt = " & State_Type'Image(Height));
-         Ask_For_Command;
       else
-         Put_Line("Command cannot be carried out. Please try again.");
+         Put_Line("Command cannot be carried out. Please enter new command!");
          Ask_For_Command;
       end if;
    end Handle_Dumy_Altitude_Reply;
