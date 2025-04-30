@@ -24,7 +24,7 @@ package body Sensors.Messages is
       Altitude_Reply : Message_Record;
    begin
       Altitude_Reply := Sensors.API.Get_Dumy_Altitude_Reply_Encode
-        (Receiver_Address => Name_Resolver.Controller,
+        (Receiver_Address => Message.Sender_Address,
          Request_ID => 1,
          Inches => Altitude);
       Route_Message(Altitude_Reply);
@@ -50,7 +50,7 @@ package body Sensors.Messages is
       end if;
 
       Increase_Reply := sensors.API.Increase_Dumy_Altitude_Reply_Encode
-        (Receiver_Address => Name_Resolver.Motors,
+        (Receiver_Address => Message.Sender_Address,
          Request_ID => 1,
          Successful => Successful);
       Route_Message(Message => Increase_Reply);
@@ -77,7 +77,7 @@ package body Sensors.Messages is
       end if;
 
       Decrease_Reply := sensors.API.Decrease_Dumy_Altitude_Reply_Encode
-        (Receiver_Address => Name_Resolver.Motors,
+        (Receiver_Address => Message.Sender_Address,
          Request_ID => 1,
          Successful => Successful);
       Route_Message(Message => Decrease_Reply);

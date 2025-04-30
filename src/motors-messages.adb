@@ -63,7 +63,7 @@ package body motors.Messages is
 
          if Voltage_One > 0 and Voltage_Two > 0 and Voltage_Three > 0 and Voltage_Four > 0 then
             Increase_Sensors := Sensors.API.Increase_Dumy_Altitude_Request_Encode
-              (Sender_Address => Name_Resolver.Sensors,
+              (Sender_Address => Name_Resolver.Motors,
                Request_ID => 1,
                Inches => State_Type'Value(Time_Type'Image(Time)));
             Route_Message(Increase_Sensors);
@@ -74,7 +74,7 @@ package body motors.Messages is
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
-        (Receiver_Address => Name_Resolver.Controller,
+        (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);
@@ -122,7 +122,7 @@ package body motors.Messages is
 
          if Voltage_One > 0 and Voltage_Two > 0 and Voltage_Three > 0 and Voltage_Four > 0 then
             Decrease_Sensors := Sensors.API.Decrease_Dumy_Altitude_Request_Encode
-              (Sender_Address => Name_Resolver.Sensors,
+              (Sender_Address => Name_Resolver.Motors,
                Request_ID => 1,
                Inches => State_Type'Value(Time_Type'Image(Time)));
             Route_Message(Decrease_Sensors);
@@ -132,7 +132,7 @@ package body motors.Messages is
       end if;
 
       Move_Reply := Motors.API.Move_Reply_Encode
-        (Receiver_Address => Name_Resolver.Controller,
+        (Receiver_Address => Message.Sender_Address,
          Request_ID       => 1,
          Successful          => Successful);
       Route_Message (Message => Move_Reply);
@@ -156,12 +156,12 @@ package body motors.Messages is
       Motor_Four := 30;
 
       Route_Message(Sensors.API.Increase_Dumy_Altitude_Request_Encode
-                      (Sender_Address => Name_Resolver.Sensors,
+                      (Sender_Address => Name_Resolver.Motors,
                        Request_ID     => 1,
                        Inches         => 3));
 
       Route_Message(Motors.API.Launch_Reply_Encode
-                      (Receiver_Address => Name_Resolver.Controller,
+                      (Receiver_Address => Message.Sender_Address,
                        Request_ID       => 1,
                        Successful       => Success));
    end Handle_Launch_Request;
@@ -191,14 +191,14 @@ package body motors.Messages is
          Motor_Four := 0;
 
          Route_Message(Sensors.API.Decrease_Dumy_Altitude_Request_Encode
-                      (Sender_Address => Name_Resolver.Sensors,
+                      (Sender_Address => Name_Resolver.Motors,
                        Request_ID     => 1,
                        Inches         => State_Type'Value(Time_Type'Image(Time))));
       else
          Successful := Failure;
       end if;
       Route_Message(Motors.API.Land_Reply_Encode
-                      (Receiver_Address => Name_Resolver.Controller,
+                      (Receiver_Address => Message.Sender_Address,
                        Request_ID       => 1,
                        Successful        => Successful));
    end Handle_Land_Request;

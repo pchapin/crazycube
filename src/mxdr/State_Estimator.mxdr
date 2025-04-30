@@ -16,6 +16,6 @@ message struct <- Get_State_Reply {
     State_Type AttitudeYaw;
     State_Type Altitude;
 };
-message struct <- Get_Dumy_State_Request {
+message struct -> Get_Dumy_State_Request {
     State_Type Dumy_Altitude;
 };
