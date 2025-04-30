@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : main.adb
 -- SUBJECT: Main program of the CrazyCube application.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 with System;

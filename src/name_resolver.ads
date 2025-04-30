@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE    : name_resolver.ads
 -- SUBJECT : Specification holding Domain IDs and Module IDs
--- AUTHOR  : (C) Copyright 2024 by Vermont State University
+-- AUTHOR  : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 with Message_Manager; use Message_Manager;

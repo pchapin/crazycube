@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : sensors-messages.ads
 -- SUBJECT: Specification of a package that implements the main part of the module.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);

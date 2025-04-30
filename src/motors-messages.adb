@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : motors-messages.adb
 -- SUBJECT: Body of a package that implements the main part of the motors module.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
@@ -14,7 +14,8 @@ with CubedOS.Log_Server.API;
 
 package body motors.Messages is
    use Message_Manager;
-   Motor_One : Voltage_Type := 0; -- with a voltage of 0, the motors are not moving
+   -- with a voltage of 0, the motors are not moving
+   Motor_One : Voltage_Type := 0;
    Motor_Two : Voltage_Type := 0;
    Motor_Three : Voltage_Type := 0;
    Motor_Four : Voltage_Type := 0;
@@ -23,6 +24,7 @@ package body motors.Messages is
    -- Message Handling
    -------------------
 
+   -- increases voltage for a given time and then decreases it back to be stable
    procedure Handle_Increase_Voltage_Request(Message : in Message_Record)
      with Pre => Motors.API.Is_Increase_Voltage(Message)
    is
@@ -80,6 +82,7 @@ package body motors.Messages is
       Route_Message (Message => Move_Reply);
    end Handle_Increase_Voltage_Request;
 
+   -- decreases voltage for a given time and then increases it back to be stable
    procedure Handle_Decrease_Voltage_Request(Message : in Message_Record)
      with Pre => Motors.API.Is_Decrease_Voltage(Message)
    is

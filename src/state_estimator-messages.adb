@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : state_estimator-messages.adb
 -- SUBJECT: Body of a package that implements the main part of the module.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
@@ -14,15 +14,19 @@ with Ada.Numerics.Elementary_Functions;
 
 package body State_Estimator.Messages is
    use Message_Manager;
+   -- keeps contant track of the pitch, roll, yaw, velocity, and altitude
    Pitch : State_Type := 0;
    Roll  : State_Type := 0;
    Yaw   : State_Type := 0;
    Velocity : State_Type := 0;
    Altitude: State_Type := 0;
+
    -------------------
    -- Message Handling
    -------------------
 
+   -- uses the dumy altitude to get a dumy state
+   -- still routes the standard state reply message to be used by the controller
    procedure Handle_Get_Dumy_State_Request(Message : in Message_Record)
      with Pre => State_Estimator.API.Is_Get_State_Request(Message)
    is

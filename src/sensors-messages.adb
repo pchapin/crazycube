@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : sensor-messages.adb
 -- SUBJECT: Body of a package that implements the main part of the module.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
@@ -13,11 +13,12 @@ with CubedOS.Log_Server.API;
 
 package body Sensors.Messages is
    use Message_Manager;
-   Altitude : State_Type := 0;
+   Altitude : State_Type := 0; -- keeps track of the dumy altitude at all time
 
    -------------------
    -- Message Handling
    -------------------
+
    procedure Handle_Get_Dumy_Altitude_Request(Message: in Message_Record)
      with Pre => Sensors.API.Is_Get_Dumy_Altitude_Request(Message)
    is
@@ -45,7 +46,6 @@ package body Sensors.Messages is
       if Altitude + Inches > 100 then
          Successful := Failure;
       else
-         --  Ada.Text_IO.Put_Line("Altitude is now: " & State_Type'Image(Altitude));
          Altitude := Altitude + Inches;
       end if;
 
@@ -72,7 +72,6 @@ package body Sensors.Messages is
       if Altitude - Inches < 0 then
          Successful := Failure;
       else
-         --  Ada.Text_IO.Put_Line("altitude is now: " & State_Type'Image(Altitude));
          Altitude := Altitude - Inches;
       end if;
 

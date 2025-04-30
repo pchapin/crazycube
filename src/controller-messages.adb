@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- FILE   : Controller-messages.adb
 -- SUBJECT: Body of a package that implements the main part of the module.
--- AUTHOR : (C) Copyright 2024 by Vermont State University
+-- AUTHOR : (C) Copyright 2025 by Vermont State University
 --
 --------------------------------------------------------------------------------
 pragma SPARK_Mode(On);
@@ -378,7 +378,7 @@ package body Controller.Messages is
       if Roll = 0 and Pitch = 0 and Yaw = 0 then
 
          if To_Lower(Command(1 .. Command_Last)) = "altitude" then
-            Put_Line("drone altitude = " & state_estimator.API.State_Type'Image(Altitude));
+            Put_Line("Drone altitude = " & state_estimator.API.State_Type'Image(Altitude));
             Ask_For_Command;
          elsif To_Lower(Command(1 .. Command_Last)) = "launch" and not In_Air and Altitude = 0 then
             Put_Line("Launching motors...");
