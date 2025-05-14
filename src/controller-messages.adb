@@ -123,13 +123,15 @@ package body Controller.Messages is
                Put_Line("");
                Put_Line("Distance is Too Far. Aborting command!");
                Ask_For_Command;
+            else
+               Put_Line("");
+               Put_Line("Checking sensors...");
+               Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
+                 (Sender_Address => Name_Resolver.Controller,
+                  Request_ID => 1);
+               Route_Message(Sensor_Message);
             end if;
-            Put_Line("");
-            Put_Line("Checking sensors...");
-            Sensor_Message := Sensors.API.Get_Dumy_Altitude_Request_Encode
-              (Sender_Address => Name_Resolver.Controller,
-               Request_ID => 1);
-            Route_Message(Sensor_Message);
+
          else
             Put_Line("You must enter a number. Aborting command!");
             Ask_For_Command;
@@ -254,8 +256,14 @@ package body Controller.Messages is
       elsif To_Lower(Command(1 .. Command_Last)) = "help" then
          Put_Line("");
          Put_Line("Available Commands Are:");
-         Put_Line("Launch, Land, Up, Down, Left, Right, Forward, Backward, Altitude, Help");
-         Ask_For_Command;
+         if In_Air then
+            Put_Line("Land, Up, Down, Left, Right, Forward, Backward, Altitude, Help");
+            Ask_For_Command;
+         else
+           Put_Line("Launch, Altitude, Help");
+            Ask_For_Command;
+         end if;
+
       elsif To_Lower(Command(1 .. Command_Last)) = "altitude" then
          Put_Line("");
          Put_Line("Checking alt sensors...");
